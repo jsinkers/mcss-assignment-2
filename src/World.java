@@ -7,15 +7,15 @@ public class World {
     // singleton instance
     private static World instance;
     // maximum grain any patch can hold
-    private final int maxGrain;
+    private final int MAX_GRAIN;
+    // number of iterations to run simulation for
+    private static final int MAX_ITERATIONS = 100;
     // turtles (agents) in the world
     private final ArrayList<Turtle> turtles = new ArrayList<>();
     // patches (divisions) of the world
     private final ArrayList<Turtle> patches = new ArrayList<>();
-
-    // current value of the lorenz
+    // current values of the lorenz curve
     private ArrayList<Float> lorenz;
-
     // current value of the gini coefficient
     private float gini;
     // current tick of the world
@@ -23,8 +23,7 @@ public class World {
 
     public World() {
         // read parameters from config file
-        maxGrain = 0;
-        // setup
+        MAX_GRAIN = 0;
     }
 
     public static World getInstance() {
@@ -35,15 +34,24 @@ public class World {
     }
 
     public static void main(String[] args) {
-        // create world
+        // create and setup world
+        World world = World.getInstance();
+        world.setup();
 
         // run model
+        for (int i = 0; i < MAX_ITERATIONS; i++) {
+            world.go();
+            // update statistics
+            world.updateLorenzAndGini();
+        }
 
         // write results to csv
+
     }
 
     public void setup() {
-
+        setupPatches();
+        setupTurtles();
     }
 
     private void setupPatches() {
@@ -59,7 +67,9 @@ public class World {
     }
 
     private void go() {
+        // run each patch
 
+        // run each turtle
     }
 
     private void updateLorenzAndGini() {
