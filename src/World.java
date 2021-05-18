@@ -1,6 +1,7 @@
 import java.io.FileReader;
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.Properties;
 import java.util.Random;
 
@@ -8,7 +9,6 @@ import java.util.Random;
  * Singleton class that represents the World, running the simulation
  */
 public class World {
-    private static int MAX_TICKS;
     // singleton instance
     private static World instance;
     private static String propertiesFile = "props/wealth-distrib-default.properties";
@@ -26,7 +26,7 @@ public class World {
     // current tick of the world
     private int tick;
     // number of iterations to run simulation for
-    private int MAX_ITERATIONS;
+    private static int MAX_TICKS;
     private int X_PATCHES;
     private int Y_PATCHES;
     private int NUM_PEOPLE;
@@ -102,6 +102,10 @@ public class World {
             System.exit(1);
         }
 
+        // determine output filename from properties filename
+        String basename = propertiesFile.split("\\.")[0];
+        String csvName = basename + ".csv";
+
         world.setup();
 
         // run model
@@ -110,12 +114,10 @@ public class World {
             System.out.println("Tick " + i);
             world.go();
             // update statistics
-            world.updateLorenzAndGini();
             world.printGrain();
+
+            // write results to csv
         }
-
-        // write results to csv
-
     }
 
     private void printGrain() {
@@ -132,6 +134,7 @@ public class World {
         setupPatches();
         // set up turtles
         setupTurtles();
+        updateLorenzAndGini();
     }
 
     /**
@@ -175,10 +178,49 @@ public class World {
             }
         }
 
+        updateLorenzAndGini();
     }
 
     private void updateLorenzAndGini() {
+        // determine wealth of each turtle
+        ArrayList<Integer> wealth = new ArrayList<>();
+        for (Turtle turtle: turtles) {
+            wealth.add(turtle.getWealth());
+        }
 
+        // lorenz points
+        lorenz = computeLorenz(wealth);
+
+        // gini
+        gini = updateGini(lorenz);
+    }
+
+    private ArrayList<Float> computeLorenz(ArrayList<Integer> wealth) {
+        // sort wealth ascending
+        Collections.sort(wealth);
+
+        // calculate total wealth
+        double totalWealth = wealth.stream()
+                .mapToDouble(w -> w)
+                .sum();
+        ArrayList<Float> lor = new ArrayList<>();
+
+        // compute Lorenz points
+        int cumulativeWealth = 0;
+        for (int w: wealth) {
+            cumulativeWealth += w;
+            float lorenzPoint = cumulativeWealth/(float)totalWealth;
+            lor.add(lorenzPoint);
+        }
+        return lor;
+    }
+
+    private float updateGini(ArrayList<Float> lorenz) {
+        float giniIndex = 0;
+        for (int i = 0; i < lorenz.size(); i++) {
+            giniIndex += (i+1)/(float)lorenz.size() - lorenz.get(i);
+        }
+        return giniIndex;
     }
 
     /**
@@ -195,6 +237,67 @@ public class World {
 
     public int getTick() {
         return tick;
+    }
+
+    /**
+     * Get patch, wrapping coordinates
+     * @param x x coordinate of patch
+     * @param y y coordinate of patch
+     * @return corresponding patch at (x,y)
+     */
+    public Patch getPatch(int x, int y) {
+        return patches[wrap(x, X_PATCHES)][wrap(y, Y_PATCHES)];
+    }
+
+    /**
+     * wrap v between 0 and max
+     * @param v value to wrap
+     * @param max maximum value
+     * @return wrapped value
+     */
+    private int wrap(int v, int max) {
+        if (v >= max) {
+            v = v % max;
+        } else if (v < 0) {
+            v = max-v;
+        }
+        return v;
+    }
+
+    public ArrayList<Patch> getHeadingPatches(int x, int y, int heading, int distance) {
+        ArrayList<Patch> neighbours = new ArrayList<>();
+        // north
+        if (heading == 0) {
+
+        } else if (heading == 90) {
+            // east
+
+        } else if (heading == 180) {
+            // south
+
+        } else if (heading == 270) {
+            // west
+
+        }
+        return neighbours;
+    }
+
+    /**
+     * get immediate neighbours of patch[x][y]
+     * @param centreX x coordinate of patch
+     * @param centreY y coordinate of patch
+     * @return ArrayList of neigbouring patches
+     */
+    public ArrayList<Patch> getPatchNeighbours(int centreX, int centreY) {
+        ArrayList<Patch> neighbours = new ArrayList<>();
+        for (int x = -1; x <= 1; x++) {
+           for (int y = -1; y <= 1; y++) {
+               if (x != 0 && y != 0) {
+                   neighbours.add(getPatch(centreX+x, centreY+y));
+               }
+           }
+        }
+        return neighbours;
     }
 }
 

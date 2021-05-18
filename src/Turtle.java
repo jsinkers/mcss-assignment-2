@@ -27,4 +27,7 @@ public class Turtle {
 
     }
 
+    public int getWealth() {
+        return wealth;
+    }
 }
