@@ -354,13 +354,33 @@ public class World {
         return v;
     }
 
+    public int getMAX_VISION() {
+        return MAX_VISION;
+    }
+
+    public int getMETABOLISM_MAX() {
+        return METABOLISM_MAX;
+    }
+
+    public int getLIFE_EXPECTANCY_MIN() {
+        return LIFE_EXPECTANCY_MIN;
+    }
+
+    public int getLIFE_EXPECTANCY_MAX() {
+        return LIFE_EXPECTANCY_MAX;
+    }
+
     /**
      * TODO if needed for Turtle
      * @param x
      * @param y
      * @param heading
      * @param distance
-     * @return
+     * @return all patches in the heading direction within
+     * the turtle's vision. If the vision reach the boundary
+     * of the world, then just return the available patches in
+     * the heading direction that is in the world
+     *
      */
     public List<Patch> getHeadingPatches(int x, int y, int heading, int distance) {
         //TODO: please put the first heading patch in the first position

@@ -1,4 +1,5 @@
 import java.util.List;
+import java.util.Random;
 
 /**
  * Represents a turtle able to move through the world, harvesting grain
@@ -10,9 +11,11 @@ public class Turtle {
 private int y;   //the current turtle position in y-axis
 
 
-    private final int lifeExpectancy;
-    private final int metabolism;
-    private final int vision;
+
+    private final int[] allDirection = {0,90,180,270};  //directions a turtle can head to
+    private int lifeExpectancy;
+    private int metabolism;
+    private int vision;
     //direction of where the turtle is heading (degree)
     //TODO: check if we still decide to use degree to represent the direction
     private int heading;
@@ -96,6 +99,28 @@ private int y;   //the current turtle position in y-axis
         if(wealth<0 || age>=lifeExpectancy){
             //TODO: need to understand how a turtle is initialized
         }
+
+    }
+
+    /**
+     * Used to reset a turtle's properties when it dies.
+     * Also used to initialize a turtle's properties when it is born
+     */
+    public void setInitialTurtleVars(){
+        //initialize the age to be 0
+        age=0;
+        //TODO: double check if we need to update the position of a turtle when it is born
+        //initialize the random direction the turtle head to
+        int rnd = new Random().nextInt(allDirection.length);
+        heading= allDirection[rnd];
+        //set a random life expectancy for the turtle
+        lifeExpectancy = World.getInstance().getLIFE_EXPECTANCY_MIN()
+                +new Random().nextInt(World.getInstance().getLIFE_EXPECTANCY_MAX()
+                -World.getInstance().getLIFE_EXPECTANCY_MIN()+1);
+
+        metabolism=1+new Random().nextInt(World.getInstance().getMETABOLISM_MAX());
+        wealth=metabolism+new Random().nextInt(50);
+        vision=1+new Random().nextInt(World.getInstance().getMAX_VISION());
 
     }
 
