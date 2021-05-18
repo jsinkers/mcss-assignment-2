@@ -110,10 +110,10 @@ public class World {
         // run model
         System.out.println("Running simulation");
         for (int i = 0; i < MAX_TICKS; i++) {
-            System.out.println("Tick " + i);
+            //System.out.println("Tick " + i);
             world.go();
             // update statistics
-            world.printGrain();
+            //world.printGrain();
         }
         // write results to csv
         world.writeToCsv();
@@ -135,7 +135,7 @@ public class World {
     private void printGrain() {
         for (int x = 0; x < X_PATCHES; x++) {
             for (int y = 0; y < Y_PATCHES; y++) {
-                System.out.print(getPatch(x,y).getGrainHere() + " ");
+                System.out.print(getPatch(x,y).grainString());
             }
             System.out.println();
         }
@@ -159,14 +159,74 @@ public class World {
         patches = new Patch[X_PATCHES][Y_PATCHES];
 
         // initialise patches
+        List<Patch> maxGrainPatches = new ArrayList<>();
         for (int x = 0; x < X_PATCHES; x++) {
+            patches[x] = new Patch[Y_PATCHES];
             for (int y = 0; y < Y_PATCHES; y++) {
+                //System.out.println(x + "," + y);
                 int patchGrain = determinePatchGrain();
-                patches[x][y] = new Patch(patchGrain, NUM_GRAIN_GROWN); }
+                patches[x][y] = new Patch(x, y, patchGrain, NUM_GRAIN_GROWN);
+                //System.out.println(patches[x][y]);
+                if (patchGrain != 0) {
+                    maxGrainPatches.add(patches[x][y]);
+                }
+            }
         }
 
-        // TODO: spread grain around.  put some back into best land (diffuse)
+        // spread grain around.  put some back into best land (diffuse)
+        // diffuse 5 times
+        printGrain();
+        for (int i = 0; i < 5; i++) {
+            for (Patch p: maxGrainPatches) {
+                // reset to initial grain value
+                p.setGrainHere(p.getMaxGrainHere());
+                diffuseGrain(p, 0.25f);
+            }
+            System.out.println("Diffusion 1." + (i+1));
+            printGrain();
+        }
+        // diffuse 10 times across all patches
+        for (int i = 0; i < 10; i++) {
+            for (int x = 0; x < X_PATCHES; x++) {
+                for (int y = 0; y < Y_PATCHES; y++) {
+                    diffuseGrain(getPatch(x,y), 0.25f);
+                }
+            }
+            System.out.println("Diffusion 2." + (i+1));
+            printGrain();
+        }
 
+        // update max grain
+        for (int x = 0; x < X_PATCHES; x++) {
+            for (int y = 0; y < Y_PATCHES; y++) {
+                Patch p = getPatch(x,y);
+                p.setMaxGrainHere(p.getGrainHere());
+            }
+        }
+        System.out.println("Reset max grain:");
+        printGrain();
+    }
+
+    // TODO: see http://ccl.northwestern.edu/netlogo/docs/dict/diffuse.html
+    // "Tells each patch to give equal shares of (number * 100) percent of the
+    // value of patch-variable to its eight neighboring patches. number should
+    // be between 0 and 1. Regardless of topology the sum of patch-variable
+    // will be conserved across the world. (If a patch has fewer than eight
+    // neighbors, each neighbor still gets an eighth share; the patch keeps
+    // any leftover shares.)"
+    private void diffuseGrain(Patch centrePatch, float proportion) {
+        int centreX = centrePatch.X;
+        int centreY = centrePatch.Y;
+        // figure out how much grain to spread
+        float grainToShare = centrePatch.getGrainHere()*proportion;
+        int grainPerNeighbour = (int)Math.floor(grainToShare/8.0f);
+        // remove grain from centre patch
+        centrePatch.addGrain(-8*grainPerNeighbour);
+        List<Patch> neighbours = getPatchNeighbours(centreX, centreY);
+        // add grain to each neighbour
+        for (Patch n: neighbours) {
+            n.addGrain(grainPerNeighbour);
+        }
     }
 
     private void setInitialTurtleVars() {
@@ -259,20 +319,25 @@ public class World {
      * @return corresponding patch at (x,y)
      */
     public Patch getPatch(int x, int y) {
-        return patches[wrap(x, X_PATCHES)][wrap(y, Y_PATCHES)];
+        int wrappedX = wrap(x, X_PATCHES);
+        int wrappedY = wrap(y, Y_PATCHES);
+        //System.out.println("x=" + x +  ", y=" + y + ", wrappedX=" +
+        // wrappedX + ", wrappedY=" + wrappedY);
+        return patches[wrappedX][wrappedY];
     }
 
     /**
-     * wrap v between 0 and max
+     * wrap v between 0 and (bound-1)
      * @param v value to wrap
-     * @param max maximum value
+     * @param bound maximum bound
      * @return wrapped value
      */
-    private int wrap(int v, int max) {
-        if (v >= max) {
+    private int wrap(int v, int bound) {
+        int max = bound-1;
+        if (v > max) {
             v = v % max;
         } else if (v < 0) {
-            v = max-v;
+            v = max+v;
         }
         return v;
     }
@@ -305,11 +370,13 @@ public class World {
         List<Patch> neighbours = new ArrayList<>();
         for (int x = -1; x <= 1; x++) {
            for (int y = -1; y <= 1; y++) {
-               if (x != 0 && y != 0) {
+               // add all except centre patch
+               if (!(x == 0 && y == 0)) {
                    neighbours.add(getPatch(centreX+x, centreY+y));
                }
            }
         }
+        //System.out.println(neighbours);
         return neighbours;
     }
 }
