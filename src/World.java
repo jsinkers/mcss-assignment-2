@@ -147,8 +147,7 @@ public class World {
         for (int x = 0; x < X_PATCHES; x++) {
             for (int y = 0; y < Y_PATCHES; y++) {
                 int patchGrain = determinePatchGrain();
-                patches[x][y] = new Patch(patchGrain);
-            }
+                patches[x][y] = new Patch(patchGrain, NUM_GRAIN_GROWN); }
         }
 
         // TODO: spread grain around.  put some back into best land (diffuse)
@@ -164,9 +163,18 @@ public class World {
     }
 
     private void go() {
-        // run each patch
-
         // run each turtle
+
+        // run each patch
+        // grow grain if necessary
+        if (tick % GRAIN_GROWTH_INTERVAL == 0) {
+            for (int x = 0; x < X_PATCHES; x++) {
+                for (int y = 0; y < Y_PATCHES; y++) {
+                    patches[x][y].growGrain();
+                }
+            }
+        }
+
     }
 
     private void updateLorenzAndGini() {
@@ -183,6 +191,10 @@ public class World {
             patchGrain = MAX_GRAIN;
         }
         return patchGrain;
+    }
+
+    public int getTick() {
+        return tick;
     }
 }
 
