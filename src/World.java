@@ -1,9 +1,5 @@
-import java.io.FileReader;
-import java.io.IOException;
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.Properties;
-import java.util.Random;
+import java.io.*;
+import java.util.*;
 
 /**
  * Singleton class that represents the World, running the simulation
@@ -14,14 +10,14 @@ public class World {
     private static String propertiesFile = "props/wealth-distrib-default.properties";
 
     // turtles (agents) in the world
-    private final ArrayList<Turtle> turtles = new ArrayList<>();
+    private final List<Turtle> turtles = new ArrayList<>();
     // patches (divisions) of the world
     private Patch[][] patches;
 
     // current values of the lorenz curve
-    private ArrayList<Float> lorenz;
-    // current value of the gini coefficient
-    private float gini;
+    private List<Float> lorenz;
+    // historical value of the gini coefficient
+    private final List<Float> gini = new ArrayList<>();
 
     // current tick of the world
     private int tick;
@@ -38,6 +34,7 @@ public class World {
     private int NUM_GRAIN_GROWN;
     private int GRAIN_GROWTH_INTERVAL;
     private int RANDOM_SEED;
+    private String csvFile;
 
     // maximum grain any patch can hold
     private int MAX_GRAIN;
@@ -53,10 +50,9 @@ public class World {
     /**
      * Read simulation properties from a properties file
      * @param propertiesFile to read properties from
-     * @return Properties with loaded values
      * @throws IOException when reading properties file
      */
-    private Properties setupProperties(String propertiesFile) throws IOException {
+    private void setupProperties(String propertiesFile) throws IOException {
         Properties worldProperties = new Properties();
         try (FileReader inStream = new FileReader(propertiesFile)) {
             worldProperties.load(inStream);
@@ -76,7 +72,10 @@ public class World {
         RANDOM_SEED = Integer.parseInt(worldProperties.getProperty( "RandomSeed"));
         random = new Random(RANDOM_SEED);
 
-        return worldProperties;
+        File propsFile = new File(propertiesFile);
+        String basename = propsFile.getName().split("\\.")[0];
+        csvFile = basename + ".csv";
+        System.out.println("Output csv: " + csvFile);
     }
 
     public static World getInstance() {
@@ -103,8 +102,8 @@ public class World {
         }
 
         // determine output filename from properties filename
-        String basename = propertiesFile.split("\\.")[0];
-        String csvName = basename + ".csv";
+        // String basename = propertiesFile.split("\\.")[0];
+        // String csvName = basename + ".csv";
 
         world.setup();
 
@@ -115,15 +114,28 @@ public class World {
             world.go();
             // update statistics
             world.printGrain();
+        }
+        // write results to csv
+        world.writeToCsv();
+    }
 
-            // write results to csv
+    private void writeToCsv() {
+        try (PrintWriter pw = new PrintWriter(new FileWriter(csvFile))) {
+            // print header
+            pw.println("tick,gini");
+            // print each line
+            for (int g = 0; g < gini.size(); g++) {
+                pw.println(String.format("%s,%s", g, gini.get(g)));
+            }
+        } catch (IOException e) {
+            e.printStackTrace();
         }
     }
 
     private void printGrain() {
         for (int x = 0; x < X_PATCHES; x++) {
             for (int y = 0; y < Y_PATCHES; y++) {
-                System.out.print(patches[x][y].getGrainHere() + " ");
+                System.out.print(getPatch(x,y).getGrainHere() + " ");
             }
             System.out.println();
         }
@@ -183,7 +195,7 @@ public class World {
 
     private void updateLorenzAndGini() {
         // determine wealth of each turtle
-        ArrayList<Integer> wealth = new ArrayList<>();
+        List<Integer> wealth = new ArrayList<>();
         for (Turtle turtle: turtles) {
             wealth.add(turtle.getWealth());
         }
@@ -192,10 +204,11 @@ public class World {
         lorenz = computeLorenz(wealth);
 
         // gini
-        gini = updateGini(lorenz);
+        float currentGini = updateGini(lorenz);
+        gini.add(currentGini);
     }
 
-    private ArrayList<Float> computeLorenz(ArrayList<Integer> wealth) {
+    private List<Float> computeLorenz(List<Integer> wealth) {
         // sort wealth ascending
         Collections.sort(wealth);
 
@@ -203,7 +216,7 @@ public class World {
         double totalWealth = wealth.stream()
                 .mapToDouble(w -> w)
                 .sum();
-        ArrayList<Float> lor = new ArrayList<>();
+        List<Float> lor = new ArrayList<>();
 
         // compute Lorenz points
         int cumulativeWealth = 0;
@@ -215,7 +228,7 @@ public class World {
         return lor;
     }
 
-    private float updateGini(ArrayList<Float> lorenz) {
+    private float updateGini(List<Float> lorenz) {
         float giniIndex = 0;
         for (int i = 0; i < lorenz.size(); i++) {
             giniIndex += (i+1)/(float)lorenz.size() - lorenz.get(i);
@@ -264,8 +277,8 @@ public class World {
         return v;
     }
 
-    public ArrayList<Patch> getHeadingPatches(int x, int y, int heading, int distance) {
-        ArrayList<Patch> neighbours = new ArrayList<>();
+    public List<Patch> getHeadingPatches(int x, int y, int heading, int distance) {
+        List<Patch> neighbours = new ArrayList<>();
         // north
         if (heading == 0) {
 
@@ -288,8 +301,8 @@ public class World {
      * @param centreY y coordinate of patch
      * @return ArrayList of neigbouring patches
      */
-    public ArrayList<Patch> getPatchNeighbours(int centreX, int centreY) {
-        ArrayList<Patch> neighbours = new ArrayList<>();
+    public List<Patch> getPatchNeighbours(int centreX, int centreY) {
+        List<Patch> neighbours = new ArrayList<>();
         for (int x = -1; x <= 1; x++) {
            for (int y = -1; y <= 1; y++) {
                if (x != 0 && y != 0) {
