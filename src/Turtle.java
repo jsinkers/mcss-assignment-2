@@ -20,10 +20,8 @@ private int y;   //the current turtle position in y-axis
     //TODO: check if we still decide to use degree to represent the direction
     private int heading;
 
-    public Turtle(int lifeExpectancy, int metabolism, int vision) {
-        this.lifeExpectancy = lifeExpectancy;
-        this.metabolism = metabolism;
-        this.vision = vision;
+    public Turtle() {
+        setInitialTurtleVars();
     }
 
 
