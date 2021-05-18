@@ -1,8 +1,15 @@
+/**
+ * Represents a discrete patch of the world.  Grain grows on each patch
+ * and can be harvested
+ */
 public class Patch {
-
+    // current amount of grain on the patch
     private int grainHere;
+    // amount of grain that grows at a given interval
     private final int numGrainGrown;
+    // maximum grain the patch can hold
     private int maxGrainHere;
+    // x, y coordinates of the patch
     public final int X;
     public final int Y;
 
@@ -14,6 +21,9 @@ public class Patch {
         this.Y = y;
     }
 
+    /**
+     * Grow grain on the patch
+     */
     public void growGrain() {
         // if patch doesn't have maximum grain, add numGrainGrown
         if (grainHere < maxGrainHere) {
@@ -25,6 +35,9 @@ public class Patch {
         }
     }
 
+    /**
+     * TODO
+     */
     public void harvest() {
 
     }
@@ -51,15 +64,13 @@ public class Patch {
 
     @Override
     public String toString() {
-        return "P{" +
-                "(" + X +
-                "," + Y +
-                "), grain=" + grainHere +
-                "/" + maxGrainHere +
-                '}';
+        return "P{(" + X + "," + Y + "), grain=" + grainHere + "/" + maxGrainHere + '}';
     }
 
+    /**
+     * returns a short string of "grainHere/maxGrainHere"
+     */
     public String grainString() {
-        return String.format("%1$"+7+"s", grainHere + "/" + maxGrainHere);
+        return String.format("%1$"+6+"s", grainHere + "/" + maxGrainHere);
     }
 }

@@ -2,7 +2,12 @@ import java.io.*;
 import java.util.*;
 
 /**
- * Singleton class that represents the World, running the simulation
+ * Singleton class that represents the World, which runs the simulation
+ * and holds all turtles and patches for the wealth distribution simulation
+ * Based on NetLogo wealth distribution model:
+ * Wilensky, U. (1998). NetLogo Wealth Distribution model.
+ * http://ccl.northwestern.edu/netlogo/models/WealthDistribution.
+ * Center for Connected Learning and Computer-Based Modeling, Northwestern University, Evanston, IL.
  */
 public class World {
     // singleton instance
@@ -88,11 +93,13 @@ public class World {
     public static void main(String[] args) {
         // create and setup world
         World world = World.getInstance();
+
+        // setup properties
+        // check if properties file passed as command-line argument
         if (args.length == 1) {
             propertiesFile = args[0];
         }
 
-        // setup properties
         System.out.println("Reading properties file " + propertiesFile);
         try {
             world.setupProperties(propertiesFile);
@@ -101,18 +108,13 @@ public class World {
             System.exit(1);
         }
 
-        // determine output filename from properties filename
-        // String basename = propertiesFile.split("\\.")[0];
-        // String csvName = basename + ".csv";
-
         world.setup();
 
         // run model
         System.out.println("Running simulation");
         for (int i = 0; i < MAX_TICKS; i++) {
-            //System.out.println("Tick " + i);
+            System.out.println("Tick " + i);
             world.go();
-            // update statistics
             //world.printGrain();
         }
         // write results to csv
@@ -163,10 +165,11 @@ public class World {
         for (int x = 0; x < X_PATCHES; x++) {
             patches[x] = new Patch[Y_PATCHES];
             for (int y = 0; y < Y_PATCHES; y++) {
-                //System.out.println(x + "," + y);
+                // determine how much grain to seed patch with
                 int patchGrain = determinePatchGrain();
+                // create the new patch
                 patches[x][y] = new Patch(x, y, patchGrain, NUM_GRAIN_GROWN);
-                //System.out.println(patches[x][y]);
+                // store patches with max grain for convenience later
                 if (patchGrain != 0) {
                     maxGrainPatches.add(patches[x][y]);
                 }
@@ -185,6 +188,7 @@ public class World {
             System.out.println("Diffusion 1." + (i+1));
             printGrain();
         }
+
         // diffuse 10 times across all patches
         for (int i = 0; i < 10; i++) {
             for (int x = 0; x < X_PATCHES; x++) {
@@ -207,13 +211,14 @@ public class World {
         printGrain();
     }
 
-    // TODO: see http://ccl.northwestern.edu/netlogo/docs/dict/diffuse.html
-    // "Tells each patch to give equal shares of (number * 100) percent of the
-    // value of patch-variable to its eight neighboring patches. number should
-    // be between 0 and 1. Regardless of topology the sum of patch-variable
-    // will be conserved across the world. (If a patch has fewer than eight
-    // neighbors, each neighbor still gets an eighth share; the patch keeps
-    // any leftover shares.)"
+    /**
+     * Diffuses grain around a central patch.  Takes proportion of the central
+     * patches grain, and shares equally among neighbours.
+     * Based on NetLogo diffuse, see:
+     * http://ccl.northwestern.edu/netlogo/docs/dict/diffuse.html
+     * @param centrePatch to diffuse grain from
+     * @param proportion of grain to diffuse
+     */
     private void diffuseGrain(Patch centrePatch, float proportion) {
         int centreX = centrePatch.X;
         int centreY = centrePatch.Y;
@@ -229,10 +234,16 @@ public class World {
         }
     }
 
+    /**
+     * TODO
+     */
     private void setInitialTurtleVars() {
 
     }
 
+    /**
+     * TODO
+     */
     private void setupTurtles() {
 
     }
@@ -308,12 +319,15 @@ public class World {
         return patchGrain;
     }
 
+    /**
+     * @return current tick of simulation
+     */
     public int getTick() {
         return tick;
     }
 
     /**
-     * Get patch, wrapping coordinates
+     * Get patch, wrapping coordinates both horizontally and vertically
      * @param x x coordinate of patch
      * @param y y coordinate of patch
      * @return corresponding patch at (x,y)
@@ -321,8 +335,6 @@ public class World {
     public Patch getPatch(int x, int y) {
         int wrappedX = wrap(x, X_PATCHES);
         int wrappedY = wrap(y, Y_PATCHES);
-        //System.out.println("x=" + x +  ", y=" + y + ", wrappedX=" +
-        // wrappedX + ", wrappedY=" + wrappedY);
         return patches[wrappedX][wrappedY];
     }
 
@@ -342,6 +354,14 @@ public class World {
         return v;
     }
 
+    /**
+     * TODO if needed for Turtle
+     * @param x
+     * @param y
+     * @param heading
+     * @param distance
+     * @return
+     */
     public List<Patch> getHeadingPatches(int x, int y, int heading, int distance) {
         List<Patch> neighbours = new ArrayList<>();
         // north
@@ -376,7 +396,6 @@ public class World {
                }
            }
         }
-        //System.out.println(neighbours);
         return neighbours;
     }
 }
