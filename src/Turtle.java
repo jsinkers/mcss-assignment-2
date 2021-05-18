@@ -78,6 +78,24 @@ private int y;   //the current turtle position in y-axis
     }
 
     public void moveEatAgeDie() {
+        //the turtle move forward by one distance
+        List<Patch> headingPatches = World.getInstance().getHeadingPatches(x,y,heading,vision);
+        //get the next patch the turtle will move to
+        Patch nextPatch=headingPatches.get(0);
+        //update the turtle position to the next patch
+        x=nextPatch.X;
+        y=nextPatch.Y;
+        //consume some grain according to metabolism
+        wealth=wealth-metabolism;
+//grow older
+        age++;
+        //check for death conditions: if you have no grain or
+        //you're older than the life expectancy or if some random factor
+        //holds, then you "die" and are "reborn" (in fact, your variables
+        //are just reset to new random values)
+        if(wealth<0 || age>=lifeExpectancy){
+            //TODO: need to understand how a turtle is initialized
+        }
 
     }
 

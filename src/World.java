@@ -363,6 +363,9 @@ public class World {
      * @return
      */
     public List<Patch> getHeadingPatches(int x, int y, int heading, int distance) {
+        //TODO: please put the first heading patch in the first position
+        // of the arrayList, this element will be used in the Turtle class
+        // to determine the next patch the turtle should move to.
         List<Patch> neighbours = new ArrayList<>();
         // north
         if (heading == 0) {
