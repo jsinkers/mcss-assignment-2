@@ -2,6 +2,7 @@ import java.io.FileReader;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Properties;
+import java.util.Random;
 
 /**
  * Singleton class that represents the World, running the simulation
@@ -15,7 +16,7 @@ public class World {
     // turtles (agents) in the world
     private final ArrayList<Turtle> turtles = new ArrayList<>();
     // patches (divisions) of the world
-    private final ArrayList<Patch> patches = new ArrayList<>();
+    private Patch[][] patches;
 
     // current values of the lorenz curve
     private ArrayList<Float> lorenz;
@@ -36,9 +37,12 @@ public class World {
     private int PERCENT_BEST_LAND;
     private int NUM_GRAIN_GROWN;
     private int GRAIN_GROWTH_INTERVAL;
+    private int RANDOM_SEED;
 
     // maximum grain any patch can hold
     private int MAX_GRAIN;
+
+    private Random random;
 
 
     public World() {
@@ -69,6 +73,8 @@ public class World {
         PERCENT_BEST_LAND = Integer.parseInt(worldProperties.getProperty( "PercentBestLand"));
         NUM_GRAIN_GROWN = Integer.parseInt(worldProperties.getProperty( "NumGrainGrown"));
         GRAIN_GROWTH_INTERVAL = Integer.parseInt(worldProperties.getProperty( "GrainGrowthInterval"));
+        RANDOM_SEED = Integer.parseInt(worldProperties.getProperty( "RandomSeed"));
+        random = new Random(RANDOM_SEED);
 
         return worldProperties;
     }
@@ -105,15 +111,23 @@ public class World {
             world.go();
             // update statistics
             world.updateLorenzAndGini();
+            world.printGrain();
         }
 
         // write results to csv
 
     }
 
-    public void setup() {
-        // set global variables
+    private void printGrain() {
+        for (int x = 0; x < X_PATCHES; x++) {
+            for (int y = 0; y < Y_PATCHES; y++) {
+                System.out.print(patches[x][y].getGrainHere() + " ");
+            }
+            System.out.println();
+        }
+    }
 
+    public void setup() {
         // set up patches
         setupPatches();
         // set up turtles
@@ -124,10 +138,20 @@ public class World {
      * Creates patches and initialises with grain
      */
     private void setupPatches() {
+        // create array of patches
         // some patches can hold the highest amount of grain possible (best
         // land)
+        patches = new Patch[X_PATCHES][Y_PATCHES];
 
-        // spread grain around.  put some back into best land (diffuse)
+        // initialise patches
+        for (int x = 0; x < X_PATCHES; x++) {
+            for (int y = 0; y < Y_PATCHES; y++) {
+                int patchGrain = determinePatchGrain();
+                patches[x][y] = new Patch(patchGrain);
+            }
+        }
+
+        // TODO: spread grain around.  put some back into best land (diffuse)
 
     }
 
@@ -147,6 +171,18 @@ public class World {
 
     private void updateLorenzAndGini() {
 
+    }
+
+    /**
+     * Determine how much grain each patch should be seeded with
+     */
+    private int determinePatchGrain() {
+        int patchGrain = 0;
+        // check if this is best land
+        if (random.nextFloat() <= (PERCENT_BEST_LAND/100.0)) {
+            patchGrain = MAX_GRAIN;
+        }
+        return patchGrain;
     }
 }
 

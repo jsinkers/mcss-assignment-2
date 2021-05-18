@@ -4,6 +4,7 @@ public class Patch {
 
     public Patch(int maxGrainHere) {
         this.maxGrainHere = maxGrainHere;
+        this.grainHere = maxGrainHere;
     }
 
     public void growGrain() {
@@ -12,5 +13,9 @@ public class Patch {
 
     public void harvest() {
 
+    }
+
+    public int getGrainHere() {
+        return grainHere;
     }
 }
