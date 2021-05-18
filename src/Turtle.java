@@ -96,6 +96,7 @@ private int y;   //the current turtle position in y-axis
         //are just reset to new random values)
         if(wealth<0 || age>=lifeExpectancy){
             //TODO: need to understand how a turtle is initialized
+            setInitialTurtleVars();
         }
 
     }
@@ -107,7 +108,8 @@ private int y;   //the current turtle position in y-axis
     public void setInitialTurtleVars(){
         //initialize the age to be 0
         age=0;
-        //TODO: double check if we need to update the position of a turtle when it is born
+        //TODO: double check if we need to update the position of a turtle when it is born,
+        // and how do we know the position of a turtle
         //initialize the random direction the turtle head to
         int rnd = new Random().nextInt(allDirection.length);
         heading= allDirection[rnd];
