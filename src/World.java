@@ -1,29 +1,76 @@
+import java.io.FileReader;
+import java.io.IOException;
 import java.util.ArrayList;
+import java.util.Properties;
 
 /**
  * Singleton class that represents the World, running the simulation
  */
 public class World {
+    private static int MAX_TICKS;
     // singleton instance
     private static World instance;
-    // maximum grain any patch can hold
-    private final int MAX_GRAIN;
-    // number of iterations to run simulation for
-    private static final int MAX_ITERATIONS = 100;
+    private static String propertiesFile = "props/wealth-distrib-default.properties";
+
     // turtles (agents) in the world
     private final ArrayList<Turtle> turtles = new ArrayList<>();
     // patches (divisions) of the world
-    private final ArrayList<Turtle> patches = new ArrayList<>();
+    private final ArrayList<Patch> patches = new ArrayList<>();
+
     // current values of the lorenz curve
     private ArrayList<Float> lorenz;
     // current value of the gini coefficient
     private float gini;
+
     // current tick of the world
     private int tick;
+    // number of iterations to run simulation for
+    private int MAX_ITERATIONS;
+    private int X_PATCHES;
+    private int Y_PATCHES;
+    private int NUM_PEOPLE;
+    private int METABOLISM_MAX;
+    private int MAX_VISION;
+    private int LIFE_EXPECTANCY_MIN;
+    private int LIFE_EXPECTANCY_MAX;
+    private int PERCENT_BEST_LAND;
+    private int NUM_GRAIN_GROWN;
+    private int GRAIN_GROWTH_INTERVAL;
+
+    // maximum grain any patch can hold
+    private int MAX_GRAIN;
+
 
     public World() {
         // read parameters from config file
-        MAX_GRAIN = 0;
+        MAX_GRAIN = 50;
+    }
+
+    /**
+     * Read simulation properties from a properties file
+     * @param propertiesFile to read properties from
+     * @return Properties with loaded values
+     * @throws IOException when reading properties file
+     */
+    private Properties setupProperties(String propertiesFile) throws IOException {
+        Properties worldProperties = new Properties();
+        try (FileReader inStream = new FileReader(propertiesFile)) {
+            worldProperties.load(inStream);
+        }
+
+        MAX_TICKS = Integer.parseInt(worldProperties.getProperty("MaxTicks"));
+        X_PATCHES = Integer.parseInt(worldProperties.getProperty("XPatches"));
+        Y_PATCHES = Integer.parseInt(worldProperties.getProperty("YPatches"));
+        NUM_PEOPLE = Integer.parseInt(worldProperties.getProperty("NumPeople"));
+        MAX_VISION = Integer.parseInt(worldProperties.getProperty("MaxVision"));
+        METABOLISM_MAX = Integer.parseInt(worldProperties.getProperty( "MetabolismMax"));
+        LIFE_EXPECTANCY_MIN = Integer.parseInt(worldProperties.getProperty( "LifeExpectancyMin"));
+        LIFE_EXPECTANCY_MAX = Integer.parseInt(worldProperties.getProperty( "LifeExpectancyMax"));
+        PERCENT_BEST_LAND = Integer.parseInt(worldProperties.getProperty( "PercentBestLand"));
+        NUM_GRAIN_GROWN = Integer.parseInt(worldProperties.getProperty( "NumGrainGrown"));
+        GRAIN_GROWTH_INTERVAL = Integer.parseInt(worldProperties.getProperty( "GrainGrowthInterval"));
+
+        return worldProperties;
     }
 
     public static World getInstance() {
@@ -36,10 +83,25 @@ public class World {
     public static void main(String[] args) {
         // create and setup world
         World world = World.getInstance();
+        if (args.length == 1) {
+            propertiesFile = args[0];
+        }
+
+        // setup properties
+        System.out.println("Reading properties file " + propertiesFile);
+        try {
+            world.setupProperties(propertiesFile);
+        } catch (IOException e) {
+            System.err.println("Failed to read properties file " + propertiesFile);
+            System.exit(1);
+        }
+
         world.setup();
 
         // run model
-        for (int i = 0; i < MAX_ITERATIONS; i++) {
+        System.out.println("Running simulation");
+        for (int i = 0; i < MAX_TICKS; i++) {
+            System.out.println("Tick " + i);
             world.go();
             // update statistics
             world.updateLorenzAndGini();
@@ -50,11 +112,22 @@ public class World {
     }
 
     public void setup() {
+        // set global variables
+
+        // set up patches
         setupPatches();
+        // set up turtles
         setupTurtles();
     }
 
+    /**
+     * Creates patches and initialises with grain
+     */
     private void setupPatches() {
+        // some patches can hold the highest amount of grain possible (best
+        // land)
+
+        // spread grain around.  put some back into best land (diffuse)
 
     }
 
