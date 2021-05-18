@@ -15,8 +15,37 @@ public class Turtle {
         this.vision = vision;
     }
 
-    private void turnTowardsGrain() {
 
+    /*
+    determine the direction which is most profitable for each turtle in
+    the surrounding patches within the turtles' vision
+
+    TODO: need to sync the heading patch mechanism with "World" class
+     */
+    private void turnTowardsGrain() {
+        int heading = 0;
+        int bestDirection = 0;
+        int bestAmount = grainAhead();
+        //try another direction (in this case 90 degree) to
+        //check if the turtle can harvest more grain
+        heading = 90;
+        if (grainAhead()>bestAmount){
+            bestDirection=90;
+            bestAmount=grainAhead();
+        }
+        //try another direction 180 degree, repeat the above process
+        heading=180;
+        if (grainAhead()>bestAmount){
+            bestDirection=180;
+            bestAmount=grainAhead();
+        }
+        //try another direction 270 degree, repeat the above process
+        heading = 270;
+        if (grainAhead()>bestAmount){
+            bestDirection=270;
+            bestAmount=grainAhead();
+        }
+        heading=bestDirection;
     }
 
     private void grainAhead() {
