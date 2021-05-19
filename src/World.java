@@ -349,34 +349,56 @@ public class World {
         if (v > max) {
             v = v % max;
         } else if (v < 0) {
-            v = max+v;
+            v = bound+v;
         }
         return v;
     }
 
     /**
-     * TODO if needed for Turtle
-     * @param x
-     * @param y
-     * @param heading
-     * @param distance
-     * @return
+     * Get patches a particular distance from centre patch in a particular
+     * heading
+     * @param centreX x coordinate of centre patch
+     * @param centreY y coordinate of centre patch
+     * @param heading direction to list patches
+     * @param distance number of patches to list in direction
+     * @return list of patches in a direction up to distance from  centre point
      */
-    public List<Patch> getHeadingPatches(int x, int y, int heading, int distance) {
+    public List<Patch> getHeadingPatches(int centreX, int centreY, Heading heading, int distance) {
         List<Patch> neighbours = new ArrayList<>();
-        // north
-        if (heading == 0) {
-
-        } else if (heading == 90) {
-            // east
-
-        } else if (heading == 180) {
-            // south
-
-        } else if (heading == 270) {
-            // west
-
+        int xMin = 0;
+        int xMax = 0;
+        int yMin = 0;
+        int yMax = 0;
+        // determine bounds for loop below
+        if (heading == Heading.NORTH) {
+            xMin = centreX;
+            xMax = centreX;
+            yMin = centreY + 1;
+            yMax = yMin + distance - 1;
+        } else if (heading == Heading.SOUTH) {
+            xMin = centreX;
+            xMax = centreY;
+            yMax = centreY - 1;
+            yMin = yMax - distance + 1;
+        } else if (heading == Heading.EAST) {
+            xMin = centreX + 1;
+            xMax = xMin + distance - 1;
+            yMin = centreY;
+            yMax = centreY;
+        } else if (heading == Heading.WEST) {
+            xMax = centreX - 1;
+            xMin = xMax - distance + 1;
+            yMin = centreY;
+            yMax = centreY;
         }
+
+        // get list of neighbours
+        for (int x = xMin; x <= xMax; x++) {
+            for (int y = yMin; y <= yMax; y++) {
+                neighbours.add(getPatch(x,y));
+            }
+        }
+
         return neighbours;
     }
 
