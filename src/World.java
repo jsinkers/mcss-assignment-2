@@ -349,7 +349,7 @@ public class World {
         if (v > max) {
             v = v % max;
         } else if (v < 0) {
-            v = max+v;
+            v = bound+v;
         }
         return v;
     }
@@ -371,35 +371,56 @@ public class World {
     }
 
     /**
-     * TODO if needed for Turtle
-     * @param x
-     * @param y
-     * @param heading
-     * @param distance
-     * @return all patches in the heading direction within
-     * the turtle's vision. If the vision reach the boundary
-     * of the world, then just return the available patches in
-     * the heading direction that is in the world
-     *
+     * Get patches a particular distance from centre patch in a particular
+     * heading
+     * @param centreX x coordinate of centre patch
+     * @param centreY y coordinate of centre patch
+     * @param heading direction to list patches
+     * @param distance number of patches to list in direction
+     * @return list of patches in a direction up to distance from  centre point
+     * TODO return all patches in the heading direction within the turtle's vision. If the vision reach the boundary of the world, then just return the available patches in the heading direction that is in the world
      */
-    public List<Patch> getHeadingPatches(int x, int y, int heading, int distance) {
+    public List<Patch> getHeadingPatches(int centreX, int centreY, Heading heading, int distance) {
+
         //TODO: please put the first heading patch in the first position
         // of the arrayList, this element will be used in the Turtle class
         // to determine the next patch the turtle should move to.
+
         List<Patch> neighbours = new ArrayList<>();
-        // north
-        if (heading == 0) {
-
-        } else if (heading == 90) {
-            // east
-
-        } else if (heading == 180) {
-            // south
-
-        } else if (heading == 270) {
-            // west
-
+        int xMin = 0;
+        int xMax = 0;
+        int yMin = 0;
+        int yMax = 0;
+        // determine bounds for loop below
+        if (heading == Heading.NORTH) {
+            xMin = centreX;
+            xMax = centreX;
+            yMin = centreY + 1;
+            yMax = yMin + distance - 1;
+        } else if (heading == Heading.SOUTH) {
+            xMin = centreX;
+            xMax = centreY;
+            yMax = centreY - 1;
+            yMin = yMax - distance + 1;
+        } else if (heading == Heading.EAST) {
+            xMin = centreX + 1;
+            xMax = xMin + distance - 1;
+            yMin = centreY;
+            yMax = centreY;
+        } else if (heading == Heading.WEST) {
+            xMax = centreX - 1;
+            xMin = xMax - distance + 1;
+            yMin = centreY;
+            yMax = centreY;
         }
+
+        // get list of neighbours
+        for (int x = xMin; x <= xMax; x++) {
+            for (int y = yMin; y <= yMax; y++) {
+                neighbours.add(getPatch(x,y));
+            }
+        }
+
         return neighbours;
     }
 
