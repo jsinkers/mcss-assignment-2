@@ -1,5 +1,7 @@
+import java.awt.*;
 import java.io.*;
 import java.util.*;
+import java.util.List;
 
 /**
  * Singleton class that represents the World, which runs the simulation
@@ -454,5 +456,35 @@ public class World {
         return random;
     }
 
+    /**
+     * Get the location of the next patch by moving from (centreX, centreY) in
+     * the direction heading.
+     * @param centreX X coordinate of current patch
+     * @param centreY Y coordinate of current patch
+     * @param direction to head
+     * @return point with (x,y) coordinates of new location
+     */
+    public Point getNextPatch(int centreX, int centreY, Heading direction) {
+        int newCentreX = centreX;
+        int newCentreY = centreY;
+
+        // increment coordinates in accordance with direction
+        if (direction == Heading.NORTH) {
+            newCentreY += 1;
+        } else if (direction == Heading.EAST) {
+            newCentreX += 1;
+        } else if (direction == Heading.SOUTH) {
+            newCentreY -= 1;
+        } else if (direction == Heading.WEST) {
+            newCentreX -= 1;
+        }
+
+        // wrap coordinates in case we have reached bounds of map
+        newCentreX = wrap(newCentreX, X_PATCHES);
+        newCentreY = wrap(newCentreY, Y_PATCHES);
+
+        // return corresponding point
+        return new Point(newCentreX, newCentreY);
+    }
 }
 
