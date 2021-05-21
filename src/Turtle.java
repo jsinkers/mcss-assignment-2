@@ -133,6 +133,35 @@ private int y;   //the current turtle position in y-axis
 
     }
 
+
+    /**
+     * This is the extension that implements the wealth inheritance mechanism.
+     * Used to reset a turtle's properties when it dies.
+     * Also used to initialize a turtle's properties when it is born.
+     * Only difference is that a offspring has the same wealth as the parent
+     */
+    public void setInitialTurtleVarsExtension(){
+        //initialize the age to be 0
+        age=0;
+        //TODO: double check if we need to update the position of a turtle when it is born,
+        // and how do we know the position of a turtle
+        //initialize the random direction the turtle head to
+        heading= Heading.values()[new Random().nextInt(Heading.values().length)];
+        //set a random life expectancy for the turtle
+        lifeExpectancy = World.getInstance().getLIFE_EXPECTANCY_MIN()
+                +new Random().nextInt(World.getInstance().getLIFE_EXPECTANCY_MAX()
+                -World.getInstance().getLIFE_EXPECTANCY_MIN()+1);
+
+        metabolism=1+new Random().nextInt(World.getInstance().getMETABOLISM_MAX());
+        //a offspring has the same wealth as the parent
+        //TODO: maybe we can remove this line as it is redundant.
+        // The only reason it is here is that we need to use this
+        // to represent wealth is inherited
+        wealth=wealth;
+        vision=1+new Random().nextInt(World.getInstance().getMAX_VISION());
+
+    }
+
     public int getWealth() {
         return wealth;
     }
