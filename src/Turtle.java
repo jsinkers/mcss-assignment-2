@@ -12,7 +12,6 @@ private int y;   //the current turtle position in y-axis
 
 
 
-    private final int[] allDirection = {0,90,180,270};  //directions a turtle can head to
     private int lifeExpectancy;
     private int metabolism;
     private int vision;
@@ -116,8 +115,7 @@ private int y;   //the current turtle position in y-axis
         //TODO: double check if we need to update the position of a turtle when it is born,
         // and how do we know the position of a turtle
         //initialize the random direction the turtle head to
-        int rnd = new Random().nextInt(allDirection.length);
-        heading= allDirection[rnd];
+        heading= Heading.values()[new Random().nextInt(Heading.values().length)];
         //set a random life expectancy for the turtle
         lifeExpectancy = World.getInstance().getLIFE_EXPECTANCY_MIN()
                 +new Random().nextInt(World.getInstance().getLIFE_EXPECTANCY_MAX()
