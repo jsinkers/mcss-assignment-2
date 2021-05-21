@@ -417,6 +417,13 @@ public class World {
         // get list of neighbours
         for (int x = xMin; x <= xMax; x++) {
             for (int y = yMin; y <= yMax; y++) {
+                //TODO: we need to make sure x,y is not out of bound.
+                // If there is no more patch to get in a turtle's vision,
+                // we should only return the available patches in the trutle's vision.
+                // For example, if a turtle has vison 10 but there is only 1 heading patch.
+                // Then only one heading patch should be returned in the list.
+                // "Vision" is the same as "distance" in this case
+
                 neighbours.add(getPatch(x,y));
             }
         }

@@ -49,7 +49,8 @@ private int y;   //the current turtle position in y-axis
         heading = Heading.SOUTH;
         if (grainAhead()>bestAmount){
             bestDirection=Heading.SOUTH;
-            //TODO: check where "beastAmount" is used
+            //TODO: check where "beastAmount" is used,
+            // maybe we should put harvest() into the turtle class
             bestAmount=grainAhead();
         }
         heading=bestDirection;
