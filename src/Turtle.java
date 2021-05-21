@@ -18,7 +18,7 @@ private int y;   //the current turtle position in y-axis
     private int vision;
     //direction of where the turtle is heading (degree)
     //TODO: check if we still decide to use degree to represent the direction
-    private int heading;
+    private Heading heading;
 
     public Turtle() {
         setInitialTurtleVars();
@@ -30,27 +30,28 @@ private int y;   //the current turtle position in y-axis
      * the surrounding patches within the turtles' vision
      * TODO: need to sync the heading patch mechanism with "World" class
      */
-    private void turnTowardsGrain() {
-         heading = 0;
-        int bestDirection = 0;
+    private void turnTowardsGrain() throws Exception {
+         heading=Heading.WEST;
+        Heading bestDirection = Heading.WEST;
         int bestAmount = grainAhead();
         //try another direction (in this case 90 degree) to
         //check if the turtle can harvest more grain
-        heading = 90;
+        heading = Heading.NORTH;
         if (grainAhead()>bestAmount){
-            bestDirection=90;
+            bestDirection=Heading.NORTH;
             bestAmount=grainAhead();
         }
         //try another direction 180 degree, repeat the above process
-        heading=180;
+        heading=Heading.EAST;
         if (grainAhead()>bestAmount){
-            bestDirection=180;
+            bestDirection=Heading.EAST;
             bestAmount=grainAhead();
         }
         //try another direction 270 degree, repeat the above process
-        heading = 270;
+        heading = Heading.SOUTH;
         if (grainAhead()>bestAmount){
-            bestDirection=270;
+            bestDirection=Heading.SOUTH;
+            //TODO: check where "beastAmount" is used
             bestAmount=grainAhead();
         }
         heading=bestDirection;
@@ -61,7 +62,7 @@ private int y;   //the current turtle position in y-axis
      *
      * @return the total number of grain in the heading patches that can be seen by the turtle
      */
-    private int grainAhead() {
+    private int grainAhead() throws Exception {
         //the total grain in the heading patches that can be seen by the turtle
         int total = 0;
         //how far the patch is ahead of a turtle, the initial heading patch is 1 distance ahead
@@ -70,10 +71,14 @@ private int y;   //the current turtle position in y-axis
         //get a list of patches which can be seen by the turtle in its heading direction
         //the number of the patches in the list depends on the vision of the turtle
         List<Patch> headingPatches = World.getInstance().getHeadingPatches(x,y,heading,vision);
+        //check if the returned heading patches list has the correct leangth
+        if(vision<headingPatches.size()){
+            throw new Exception("the number of heading patches does not match the turtle's vision");
+        }
         //add up the total grain in the heading patches that can be seen by the turtle
-        for(int i=0;i<vision;i++){
+        for(int i=0;i<headingPatches.size();i++){
             total=total+headingPatches.get(i).getGrainHere();
-            howFar++;
+            howFar=howFar+1;
         }
         return total;
     }
