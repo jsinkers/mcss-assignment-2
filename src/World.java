@@ -449,5 +449,10 @@ public class World {
         }
         return neighbours;
     }
+
+    public Random getRandom() {
+        return random;
+    }
+
 }
 

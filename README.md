@@ -1,4 +1,5 @@
-# mcss-assignment-2
+# Wealth Distribution
+
 SWEN90004 - Modelling Complex Software Systems - Assignment 2
 
 ## Properties Files
