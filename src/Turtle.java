@@ -16,7 +16,6 @@ private int y;   //the current turtle position in y-axis
     private int metabolism;
     private int vision;
     //direction of where the turtle is heading (degree)
-    //TODO: check if we still decide to use degree to represent the direction
     private Heading heading;
 
     public Turtle() {
@@ -27,9 +26,9 @@ private int y;   //the current turtle position in y-axis
     /**
      * determine the direction which is most profitable for each turtle in
      * the surrounding patches within the turtles' vision
-     * TODO: need to sync the heading patch mechanism with "World" class
      */
     private void turnTowardsGrain() throws Exception {
+        //start from checking the amount of grain available in the West side
          heading=Heading.WEST;
         Heading bestDirection = Heading.WEST;
         int bestAmount = grainAhead();
@@ -82,14 +81,20 @@ private int y;   //the current turtle position in y-axis
         return total;
     }
 
-    public void moveEatAgeDie() {
+    public void moveEatAgeDie() throws Exception {
         //the turtle move forward by one distance
         List<Patch> headingPatches = World.getInstance().getHeadingPatches(x,y,heading,vision);
         //get the next patch the turtle will move to
-        Patch nextPatch=headingPatches.get(0);
-        //update the turtle position to the next patch
-        x=nextPatch.X;
-        y=nextPatch.Y;
+        //TODO: need to make sure that headPatches.get(0) get the first patch in the heading direction
+        if(headingPatches.size()>0) {
+            Patch nextPatch = headingPatches.get(0);
+            //update the turtle position to the next patch
+            x=nextPatch.X;
+            y=nextPatch.Y;
+        }else {
+            throw new Exception("there is no patch this turtle can move to");
+        }
+
         //consume some grain according to metabolism
         wealth=wealth-metabolism;
 //grow older
