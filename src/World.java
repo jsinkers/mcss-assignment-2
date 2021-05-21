@@ -354,6 +354,22 @@ public class World {
         return v;
     }
 
+    public int getMAX_VISION() {
+        return MAX_VISION;
+    }
+
+    public int getMETABOLISM_MAX() {
+        return METABOLISM_MAX;
+    }
+
+    public int getLIFE_EXPECTANCY_MIN() {
+        return LIFE_EXPECTANCY_MIN;
+    }
+
+    public int getLIFE_EXPECTANCY_MAX() {
+        return LIFE_EXPECTANCY_MAX;
+    }
+
     /**
      * Get patches a particular distance from centre patch in a particular
      * heading
@@ -362,8 +378,14 @@ public class World {
      * @param heading direction to list patches
      * @param distance number of patches to list in direction
      * @return list of patches in a direction up to distance from  centre point
+     * TODO return all patches in the heading direction within the turtle's vision. If the vision reach the boundary of the world, then just return the available patches in the heading direction that is in the world
      */
     public List<Patch> getHeadingPatches(int centreX, int centreY, Heading heading, int distance) {
+
+        //TODO: please put the first heading patch in the first position
+        // of the arrayList, this element will be used in the Turtle class
+        // to determine the next patch the turtle should move to.
+
         List<Patch> neighbours = new ArrayList<>();
         int xMin = 0;
         int xMax = 0;
