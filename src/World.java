@@ -271,7 +271,7 @@ public class World {
     }
 
     /**
-     * Spread turtle over the world
+     * TODO: Spread turtle over the world
      */
     private void setupTurtles() {
 
