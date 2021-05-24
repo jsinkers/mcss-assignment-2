@@ -1,3 +1,4 @@
+import java.awt.*;
 import java.util.List;
 import java.util.Random;
 
@@ -7,6 +8,7 @@ import java.util.Random;
 public class Turtle {
     private int age;
     private int wealth;
+
     private int x;  //the current turtle position in x-axis
     private int y;   //the current turtle position in y-axis
 
@@ -17,7 +19,17 @@ public class Turtle {
     //direction of where the turtle is heading (degree)
     private Heading heading;
 
-    public Turtle() {
+
+    /**
+     * Constructor used to initialize a turtle
+     * @param x initial x coordinate of the turtle position
+     * @param y initial y coordinate of the turtle position
+     */
+    public Turtle(int x, int y) {
+        //initialize the turtle position with the coordinate information passed from the caller
+        this.x=x;
+        this.y=y;
+        //initialize other turtle properties
         random = World.getInstance().getRandom();
         setInitialTurtleVars();
     }
@@ -27,7 +39,7 @@ public class Turtle {
      * determine the direction which is most profitable for each turtle in
      * the surrounding patches within the turtles' vision
      */
-    private void turnTowardsGrain() throws Exception {
+    public void turnTowardsGrain() throws Exception {
         //start from checking the amount of grain available in the West side
          heading=Heading.WEST;
         Heading bestDirection = Heading.WEST;
@@ -69,10 +81,15 @@ public class Turtle {
         //TODO: need to double check if this method is used correctly
         //get a list of patches which can be seen by the turtle in its heading direction
         //the number of the patches in the list depends on the vision of the turtle
-        List<Patch> headingPatches = World.getInstance().getHeadingPatches(x,y,heading,vision);
+        List<Patch> headingPatches = World.getInstance()
+                .getHeadingPatches(x, y, heading, vision);
         //check if the returned heading patches list has the correct leangth
-        if(vision<headingPatches.size()){
-            throw new Exception("the number of heading patches does not match the turtle's vision");
+        if (vision != headingPatches.size()){
+            throw new Exception(String.format("Location (%d,%d), %s: the" +
+                    " number " +
+                "of heading patches, %d, does not match the " +
+                "turtle's vision, %d", x, y, heading, headingPatches.size(),
+                    vision));
         }
         //add up the total grain in the heading patches that can be seen by the turtle
         for(int i=0;i<headingPatches.size();i++){
@@ -83,7 +100,7 @@ public class Turtle {
     }
 
     public void moveEatAgeDie() throws Exception {
-        //the turtle move forward by one distance
+        /*//the turtle move forward by one distance
         List<Patch> headingPatches = World.getInstance().getHeadingPatches(x,y,heading,vision);
         //get the next patch the turtle will move to
         //TODO: need to make sure that headPatches.get(0) get the first patch in the heading direction
@@ -94,7 +111,14 @@ public class Turtle {
             y=nextPatch.Y;
         }else {
             throw new Exception("there is no patch this turtle can move to");
-        }
+        }*/
+
+        //update the heading direction of the turtle
+        //TODO: check this works properly
+        Point nextPatch = World.getInstance().getNextPatch(x,y,heading);
+        //update the turtle position to the new position after moving one distance
+        x= (int) nextPatch.getX();
+        y= (int) nextPatch.getY();
 
         //consume some grain according to metabolism
         wealth=wealth-metabolism;
@@ -123,13 +147,13 @@ public class Turtle {
         //initialize the random direction the turtle head to
         heading= Heading.values()[random.nextInt(Heading.values().length)];
         //set a random life expectancy for the turtle
-        lifeExpectancy = World.getInstance().getLIFE_EXPECTANCY_MIN()
-                +random.nextInt(World.getInstance().getLIFE_EXPECTANCY_MAX()
-                -World.getInstance().getLIFE_EXPECTANCY_MIN()+1);
+        lifeExpectancy = World.getInstance().getLifeExpectancyMin()
+                +random.nextInt(World.getInstance().getLifeExpectancyMax()
+                -World.getInstance().getLifeExpectancyMin()+1);
 
-        metabolism=1+random.nextInt(World.getInstance().getMETABOLISM_MAX());
+        metabolism=1+random.nextInt(World.getInstance().getMetabolismMax());
         wealth=metabolism+random.nextInt(50);
-        vision=1+random.nextInt(World.getInstance().getMAX_VISION());
+        vision=1+random.nextInt(World.getInstance().getMaxVision());
 
     }
 
@@ -148,21 +172,38 @@ public class Turtle {
         //initialize the random direction the turtle head to
         heading= Heading.values()[random.nextInt(Heading.values().length)];
         //set a random life expectancy for the turtle
-        lifeExpectancy = World.getInstance().getLIFE_EXPECTANCY_MIN()
-                +random.nextInt(World.getInstance().getLIFE_EXPECTANCY_MAX()
-                -World.getInstance().getLIFE_EXPECTANCY_MIN()+1);
+        lifeExpectancy = World.getInstance().getLifeExpectancyMin()
+                +random.nextInt(World.getInstance().getLifeExpectancyMax()
+                -World.getInstance().getLifeExpectancyMin()+1);
 
-        metabolism=1+random.nextInt(World.getInstance().getMETABOLISM_MAX());
+        metabolism=1+random.nextInt(World.getInstance().getMetabolismMax());
         //a offspring has the same wealth as the parent
         //TODO: maybe we can remove this line as it is redundant.
         // The only reason it is here is that we need to use this
         // to represent wealth is inherited
         wealth=wealth;
-        vision=1+random.nextInt(World.getInstance().getMAX_VISION());
+        vision=1+random.nextInt(World.getInstance().getMaxVision());
 
+    }
+
+    public int getX() {
+        return x;
+    }
+
+    public int getY() {
+        return y;
     }
 
     public int getWealth() {
         return wealth;
+    }
+
+    public void setWealth(int wealth) {
+        this.wealth = wealth;
+    }
+
+    @Override
+    public String toString() {
+        return "Turtle{" + "wealth=" + wealth + ", x=" + x + ", y=" + y + '}';
     }
 }
