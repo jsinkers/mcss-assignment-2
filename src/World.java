@@ -18,7 +18,7 @@ public class World {
     private static World instance;
     // number of iterations to run simulation for
     // TODO: no longer static
-    private static int MAX_TICKS;
+    private static int maxTicks;
 
     // turtles (agents) in the world
     private final List<Turtle> turtles = new ArrayList<>();
@@ -84,7 +84,7 @@ public class World {
         }
 
         // parse properties from properties file
-        MAX_TICKS = Integer.parseInt(worldProperties.getProperty("MaxTicks"));
+        maxTicks = Integer.parseInt(worldProperties.getProperty("MaxTicks"));
         xPatches = Integer.parseInt(worldProperties.getProperty("XPatches"));
         yPatches = Integer.parseInt(worldProperties.getProperty("YPatches"));
         numPeople = Integer.parseInt(worldProperties.getProperty("NumPeople"));
@@ -132,11 +132,12 @@ public class World {
 
         // run model
         System.out.println("Running simulation");
-        for (int i = 0; i < MAX_TICKS; i++) {
+        for (int i = 0; i < maxTicks; i++) {
             System.out.println("Tick " + i);
             try {
                 world.go();
             } catch (Exception e) {
+                e.printStackTrace();
                 System.exit(1);
             }
             //world.printGrain();
@@ -210,7 +211,7 @@ public class World {
 
         // spread grain around.  put some back into best land (diffuse)
         // diffuse 5 times
-        printGrain();
+        //printGrain();
         for (int i = 0; i < 5; i++) {
             for (Patch p: maxGrainPatches) {
                 // reset to initial grain value
@@ -218,7 +219,7 @@ public class World {
                 diffuseGrain(p, 0.25f);
             }
             System.out.println("Diffusion 1." + (i+1));
-            printGrain();
+            //printGrain();
         }
 
         // diffuse 10 times across all patches
@@ -229,7 +230,7 @@ public class World {
                 }
             }
             System.out.println("Diffusion 2." + (i+1));
-            printGrain();
+            //printGrain();
         }
 
         // update max grain
@@ -240,7 +241,7 @@ public class World {
             }
         }
         System.out.println("Reset max grain:");
-        printGrain();
+        //printGrain();
     }
 
     /**
@@ -344,7 +345,8 @@ public class World {
         lorenz = computeLorenz(wealth);
 
         // gini
-        float currentGini = updateGini(lorenz);
+        float currentGini = computeGini(lorenz);
+        System.out.println("Tick: " + tick + ", Gini index: " + currentGini);
         gini.add(currentGini);
     }
 
@@ -368,10 +370,16 @@ public class World {
         return lor;
     }
 
-    private float updateGini(List<Float> lorenz) {
+    /**
+     * Compute the Gini index from a set of Lorenz points
+     * @param lorenz list of values comprising the lorenz curve
+     * @return Gini index corresponding to lorenz curve
+     */
+    private float computeGini(List<Float> lorenz) {
         float giniIndex = 0;
+        float numLorenz = (float)lorenz.size();
         for (int i = 0; i < lorenz.size(); i++) {
-            giniIndex += (i+1)/(float)lorenz.size() - lorenz.get(i);
+            giniIndex += (i+1)/numLorenz - lorenz.get(i);
         }
         return giniIndex;
     }
@@ -441,19 +449,15 @@ public class World {
 
     /**
      * Get patches a particular distance from centre patch in a particular
-     * heading
+     * heading.  Note: result is unsorted by distance.
      * @param centreX x coordinate of centre patch
      * @param centreY y coordinate of centre patch
      * @param heading direction to list patches
      * @param distance number of patches to list in direction
      * @return list of patches in a direction up to distance from  centre point
-     * TODO return all patches in the heading direction within the turtle's vision. If the vision reach the boundary of the world, then just return the available patches in the heading direction that is in the world
      */
     public List<Patch> getHeadingPatches(int centreX, int centreY, Heading heading, int distance) {
-        //TODO: please put the first heading patch in the first position
-        // of the arrayList, this element will be used in the Turtle class
-        // to determine the next patch the turtle should move to.
-
+        // list to maintain the patches immediate neighbours
         List<Patch> neighbours = new ArrayList<>();
         int xMin = 0;
         int xMax = 0;

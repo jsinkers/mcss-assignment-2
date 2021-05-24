@@ -81,10 +81,15 @@ public class Turtle {
         //TODO: need to double check if this method is used correctly
         //get a list of patches which can be seen by the turtle in its heading direction
         //the number of the patches in the list depends on the vision of the turtle
-        List<Patch> headingPatches = World.getInstance().getHeadingPatches(x,y,heading,vision);
+        List<Patch> headingPatches = World.getInstance()
+                .getHeadingPatches(x, y, heading, vision);
         //check if the returned heading patches list has the correct leangth
-        if(vision<headingPatches.size()){
-            throw new Exception("the number of heading patches does not match the turtle's vision");
+        if (vision != headingPatches.size()){
+            throw new Exception(String.format("Location (%d,%d), %s: the" +
+                    " number " +
+                "of heading patches, %d, does not match the " +
+                "turtle's vision, %d", x, y, heading, headingPatches.size(),
+                    vision));
         }
         //add up the total grain in the heading patches that can be seen by the turtle
         for(int i=0;i<headingPatches.size();i++){
