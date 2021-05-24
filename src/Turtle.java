@@ -17,7 +17,16 @@ public class Turtle {
     //direction of where the turtle is heading (degree)
     private Heading heading;
 
-    public Turtle() {
+    /**
+     * Constructor used to initialize a turtle
+     * @param x initial x coordinate of the turtle position
+     * @param y initial y coordinate of the turtle position
+     */
+    public Turtle(int x, int y) {
+        //initialize the turtle position with the coordinate information passed from the caller
+        this.x=x;
+        this.y=y;
+        //initialize other turtle properties
         random = World.getInstance().getRandom();
         setInitialTurtleVars();
     }
