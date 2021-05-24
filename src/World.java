@@ -17,6 +17,7 @@ public class World {
     // singleton instance
     private static World instance;
     // number of iterations to run simulation for
+    // TODO: no longer static
     private static int MAX_TICKS;
 
     // turtles (agents) in the world
@@ -62,14 +63,12 @@ public class World {
     private String csvFile;
 
     // maximum grain any patch can hold
-    private int MAX_GRAIN;
+    private final int MAX_GRAIN = 50;
 
     // random number generator
     private Random random;
 
-    public World() {
-        // read parameters from config file
-        MAX_GRAIN = 50;
+    private World() {
     }
 
     /**
@@ -135,7 +134,11 @@ public class World {
         System.out.println("Running simulation");
         for (int i = 0; i < MAX_TICKS; i++) {
             System.out.println("Tick " + i);
-            world.go();
+            try {
+                world.go();
+            } catch (Exception e) {
+                System.exit(1);
+            }
             //world.printGrain();
         }
         // write results to csv
@@ -264,21 +267,24 @@ public class World {
     }
 
     /**
-     * TODO
-     */
-    private void setInitialTurtleVars() {
-
-    }
-
-    /**
-     * TODO
+     * Set up the initial values for the turtle variables
      */
     private void setupTurtles() {
-
+       for (int i = 0; i < numPeople; i++) {
+           // determine location of new turtle
+           int x = random.nextInt(xPatches);
+           int y = random.nextInt(yPatches);
+           // create new turtle and add to the list of turtles
+           Turtle turtle = new Turtle(x, y);
+           turtles.add(turtle);
+       }
     }
 
-    private void go() {
+    private void go() throws Exception {
         // run each turtle
+        for (Turtle t: turtles) {
+            t.moveEatAgeDie();
+        }
 
         // run each patch
         // grow grain if necessary
@@ -515,4 +521,3 @@ public class World {
         this.propertiesFile = propertiesFile;
     }
 }
-
