@@ -7,6 +7,9 @@ import java.util.List;
 
 import static org.junit.jupiter.api.Assertions.*;
 
+/**
+ * Unit tests for World
+ */
 class WorldTest {
     World world;
 
@@ -18,7 +21,38 @@ class WorldTest {
 
     @Test
     void getHeadingPatches() {
+        List<Patch> patches = world.getHeadingPatches(10, 27, Heading.NORTH, 5);
+        assertEquals(5, patches.size());
+    }
 
+    @Test
+    void getHeadingPatches2() {
+        List<Patch> patches = world.getHeadingPatches(51, 27, Heading.EAST, 3);
+        assertEquals(3, patches.size());
+    }
+
+    @Test
+    void getHeadingPatches3() {
+        List<Patch> patches = world.getHeadingPatches(10, 27, Heading.SOUTH, 2);
+        assertEquals(2, patches.size());
+    }
+
+    @Test
+    void getHeadingPatches4() {
+        List<Patch> patches = world.getHeadingPatches(2, 0, Heading.WEST, 2);
+        assertEquals(2, patches.size());
+    }
+
+    @Test
+    void getHeadingPatches5() {
+        List<Patch> patches = world.getHeadingPatches(2, 0, Heading.WEST, 0);
+        assertEquals(0, patches.size());
+    }
+
+    @Test
+    void getHeadingPatches6() {
+        List<Patch> patches = world.getHeadingPatches(2, 0, Heading.SOUTH, 3);
+        assertEquals(3, patches.size());
     }
 
     @Test
@@ -126,13 +160,13 @@ class WorldTest {
     }
 
     @Test
-    void updateGini() {
+    void computeGini() {
         // test case: 2 turtles, with wealth 62 and 16.  gini-index: 0.29487
         List<Integer> wealth = new ArrayList<>();
         wealth.add(62);
         wealth.add(16);
         List<Float> lor = world.computeLorenz(wealth);
-        float gini = world.updateGini(lor);
+        float gini = world.computeGini(lor);
         assertEquals(0.29487, gini, 0.001);
     }
 }
