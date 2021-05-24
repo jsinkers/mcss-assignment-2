@@ -35,6 +35,7 @@ public class Patch {
         }
     }
 
+
     public int getGrainHere() {
         return grainHere;
     }
