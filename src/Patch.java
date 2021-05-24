@@ -1,3 +1,5 @@
+import java.util.List;
+
 /**
  * Represents a discrete patch of the world.  Grain grows on each patch
  * and can be harvested
@@ -35,6 +37,26 @@ public class Patch {
         }
     }
 
+    /**
+     * Divide the grain evenly amongst all turtles on the patch
+     */
+    public void harvest() {
+        // get all of the turtles on the patch
+        List<Turtle> turtleList = World.getInstance().getTurtlesOnPatch(X, Y);
+        // determine amount of grain to share, by dividing it evenly among
+        // the turtles on the patch, rounding down
+        int grainToShare = getGrainHere() / turtleList.size();
+
+        // have turtles harvest before any turtle sets the patch to 0
+        for (Turtle t: turtleList) {
+            // update the wealth of each turtle
+            int turtleWealth = t.getWealth() + grainToShare;
+            t.setWealth(turtleWealth);
+        }
+
+        // set Grain to 0 on the patch after harvest
+        setGrainHere(0);
+    }
 
     public int getGrainHere() {
         return grainHere;

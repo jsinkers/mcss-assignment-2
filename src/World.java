@@ -280,39 +280,17 @@ public class World {
        }
     }
 
-
-    /**
-     * Divide the grain evenly amongst all turtles on the patch
-     * @param p patch to harvest
-     */
-    private void harvest(Patch p) {
-        // get all of the turtles on the patch
-        List<Turtle> turtleList = getTurtlesOnPatch(p.X, p.Y);
-        // determine amount of grain to share, by dividing it evenly among
-        // the turtles on the patch, rounding down
-        int grainToShare = p.getGrainHere() / turtleList.size();
-
-        // have turtles harvest before any turtle sets the patch to 0
-        for (Turtle t: turtleList) {
-            // update the wealth of each turtle
-            int turtleWealth = t.getWealth() + grainToShare;
-            t.setWealth(turtleWealth);
-        }
-
-        // set Grain to 0 on the patch after harvest
-        p.setGrainHere(0);
-    }
-
     /**
      * Determine the turtles on each patch
      * @param x x coordinate of patch
      * @param y y coordinate of patch
      * @return list of turtles on specified patch
      */
-    private List<Turtle> getTurtlesOnPatch(int x, int y) {
+    public List<Turtle> getTurtlesOnPatch(int x, int y) {
         List<Turtle> turtleList = new ArrayList<>();
 
         for (Turtle turtle: turtles) {
+            // check if turtle is on the patch
             if (turtle.getX() == x && turtle.getY() == y) {
                 turtleList.add(turtle);
             } 
@@ -325,14 +303,24 @@ public class World {
      * Run one step of the simulation
      */
     private void go() throws Exception {
+        // make turtles turn towards grain
+        for (Turtle t: turtles) {
+            t.turnTowardsGrain();
+        }
+
+        // harvest grain
+        for (int x = 0; x < xPatches; x++) {
+            for (int y = 0; y < yPatches; y++) {
+                patches[x][y].harvest();
+            }
+        }
 
         // run each turtle
         for (Turtle t: turtles) {
             t.moveEatAgeDie();
         }
 
-        // run each patch
-        // grow grain if necessary
+        // grow grain on patches if necessary
         if (tick % grainGrowthInterval == 0) {
             for (int x = 0; x < xPatches; x++) {
                 for (int y = 0; y < yPatches; y++) {

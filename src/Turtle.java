@@ -39,7 +39,7 @@ public class Turtle {
      * determine the direction which is most profitable for each turtle in
      * the surrounding patches within the turtles' vision
      */
-    private void turnTowardsGrain() throws Exception {
+    public void turnTowardsGrain() throws Exception {
         //start from checking the amount of grain available in the West side
          heading=Heading.WEST;
         Heading bestDirection = Heading.WEST;
@@ -110,7 +110,6 @@ public class Turtle {
 
         //update the heading direction of the turtle
         //TODO: check this works properly
-        turnTowardsGrain();
         Point nextPatch = World.getInstance().getNextPatch(x,y,heading);
         //update the turtle position to the new position after moving one distance
         x= (int) nextPatch.getX();
@@ -196,5 +195,10 @@ public class Turtle {
 
     public void setWealth(int wealth) {
         this.wealth = wealth;
+    }
+
+    @Override
+    public String toString() {
+        return "Turtle{" + "wealth=" + wealth + ", x=" + x + ", y=" + y + '}';
     }
 }
