@@ -43,6 +43,12 @@ public class Patch {
     public void harvest() {
         // get all of the turtles on the patch
         List<Turtle> turtleList = World.getInstance().getTurtlesOnPatch(X, Y);
+
+        // if there are no turtles present, there's nothing left to do
+        if (turtleList.size() == 0) {
+            return;
+        }
+
         // determine amount of grain to share, by dividing it evenly among
         // the turtles on the patch, rounding down
         int grainToShare = getGrainHere() / turtleList.size();
