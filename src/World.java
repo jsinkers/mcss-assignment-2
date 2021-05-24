@@ -282,36 +282,32 @@ public class World {
 
 
     /**
-     * If there are multiple turtles on a patch,
-     * divide the grain evenly among the turtles
-     * @param p
-     * @param turtle
-     */ 
+     * Divide the grain evenly amongst all turtles on the patch
+     * @param p patch to harvest
+     */
     private void harvest(Patch p) {
-            
-        int turtleWealth = 0;
-
         // get all of the turtles on the patch
-        List<Turtle> turtleList = new ArrayList<>();
+        List<Turtle> turtleList = getTurtlesOnPatch(p.X, p.Y);
+        // determine amount of grain to share, by dividing it evenly among
+        // the turtles on the patch, rounding down
+        int grainToShare = p.getGrainHere() / turtleList.size();
 
-        turtleList = getTurtlesOnPatch(p.X,p.Y);
-
-        for (Turtle eachTurtle: turtleList) {
-        
-            // have turtles harvest before any turtle sets the patch to 0  
-            turtleWealth = eachTurtle.getWealth() + (p.getGrainHere() / (getTurtlesOnPatch(p.X,p.Y)).size());
-            eachTurtle.setWealth(turtleWealth);
+        // have turtles harvest before any turtle sets the patch to 0
+        for (Turtle t: turtleList) {
+            // update the wealth of each turtle
+            int turtleWealth = t.getWealth() + grainToShare;
+            t.setWealth(turtleWealth);
         }
 
-        // set Grain to 0 after harvest
+        // set Grain to 0 on the patch after harvest
         p.setGrainHere(0);
     }
 
     /**
-     * 
-     * @param x
-     * @param y
-     * @return
+     * Determine the turtles on each patch
+     * @param x x coordinate of patch
+     * @param y y coordinate of patch
+     * @return list of turtles on specified patch
      */
     private List<Turtle> getTurtlesOnPatch(int x, int y) {
         List<Turtle> turtleList = new ArrayList<>();
@@ -325,6 +321,9 @@ public class World {
         return turtleList;
     }
 
+    /**
+     * Run one step of the simulation
+     */
     private void go() throws Exception {
 
         // run each turtle
@@ -342,6 +341,7 @@ public class World {
             }
         }
 
+        // update statistics for each run
         updateLorenzAndGini();
     }
 
