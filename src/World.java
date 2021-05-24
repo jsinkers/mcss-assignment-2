@@ -254,13 +254,21 @@ public class World {
      * @param p
      * @param turtle
      */ 
-    public void harvest(Patch p, Turtle turtle) {
-        
+    private void harvest(Patch p) {
+            
         int turtleWealth = 0;
 
-        // have turtles harvest before any turtle sets the patch to 0
-        turtleWealth = turtle.getWealth() + (p.getGrainHere() / (getTurtlesOnPatch(p.X,p.Y)).size());
-        turtle.setWealth(turtleWealth);
+        // get all of the turtles on the patch
+        List<Turtle> turtleList = new ArrayList<>();
+
+        turtleList = getTurtlesOnPatch(p.X,p.Y);
+
+        for (Turtle eachTurtle: turtleList) {
+        
+            // have turtles harvest before any turtle sets the patch to 0  
+            turtleWealth = eachTurtle.getWealth() + (p.getGrainHere() / (getTurtlesOnPatch(p.X,p.Y)).size());
+            eachTurtle.setWealth(turtleWealth);
+        }
 
         // set Grain to 0 after harvest
         p.setGrainHere(0);
