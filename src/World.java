@@ -352,7 +352,7 @@ public class World {
     private int wrap(int v, int bound) {
         int max = bound-1;
         if (v > max) {
-            v = v % max;
+            v = v % max - 1;
         } else if (v < 0) {
             v = bound+v;
         }

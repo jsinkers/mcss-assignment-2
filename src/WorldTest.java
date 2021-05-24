@@ -1,6 +1,7 @@
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
+import java.awt.*;
 import java.util.List;
 
 import static org.junit.jupiter.api.Assertions.*;
@@ -28,6 +29,37 @@ class WorldTest {
 
     @Test
     void getNextPatch() {
+        Point p1 = world.getNextPatch(0,0, Heading.NORTH);
+        assertEquals(0, p1.getX());
+        assertEquals(1, p1.getY());
+    }
+
+    @Test
+    void getNextPatch2() {
+        Point p1 = world.getNextPatch(0,50, Heading.NORTH);
+        assertEquals(0, p1.getX());
+        assertEquals(0, p1.getY());
+    }
+
+    @Test
+    void getNextPatch3() {
+        Point p1 = world.getNextPatch(0,0, Heading.WEST);
+        assertEquals(50, p1.getX());
+        assertEquals(0, p1.getY());
+    }
+
+    @Test
+    void getNextPatch4() {
+        Point p1 = world.getNextPatch(0,0, Heading.SOUTH);
+        assertEquals(0, p1.getX());
+        assertEquals(50, p1.getY());
+    }
+
+    @Test
+    void getNextPatch5() {
+        Point p1 = world.getNextPatch(0,0, Heading.EAST);
+        assertEquals(1, p1.getX());
+        assertEquals(0, p1.getY());
     }
 
     @Test
@@ -50,6 +82,6 @@ class WorldTest {
         // off top patch
         Patch p1 = world.getPatch(0,61);
         assertEquals(0, p1.X);
-        assertEquals(11, p1.Y);
+        assertEquals(10, p1.Y);
     }
 }
