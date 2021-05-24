@@ -35,12 +35,6 @@ public class Patch {
         }
     }
 
-    /**
-     * TODO: not sure if this method belong to Turtle or the Patch, maybe it should beong to the turtle since turtle do the Harvest action
-     */
-    public void harvest() {
-
-    }
 
     public int getGrainHere() {
         return grainHere;
