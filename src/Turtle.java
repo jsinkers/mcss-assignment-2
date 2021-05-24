@@ -1,3 +1,4 @@
+import java.awt.*;
 import java.util.List;
 import java.util.Random;
 
@@ -92,7 +93,7 @@ public class Turtle {
     }
 
     public void moveEatAgeDie() throws Exception {
-        //the turtle move forward by one distance
+        /*//the turtle move forward by one distance
         List<Patch> headingPatches = World.getInstance().getHeadingPatches(x,y,heading,vision);
         //get the next patch the turtle will move to
         //TODO: need to make sure that headPatches.get(0) get the first patch in the heading direction
@@ -103,7 +104,15 @@ public class Turtle {
             y=nextPatch.Y;
         }else {
             throw new Exception("there is no patch this turtle can move to");
-        }
+        }*/
+
+        //update the heading direction of the turtle
+        //TODO: check this works properly
+        turnTowardsGrain();
+        Point nextPatch = World.getInstance().getNextPatch(x,y,heading);
+        //update the turtle position to the new position after moving one distance
+        x= (int) nextPatch.getX();
+        y= (int) nextPatch.getY();
 
         //consume some grain according to metabolism
         wealth=wealth-metabolism;
