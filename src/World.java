@@ -224,7 +224,7 @@ public class World {
      * @param centrePatch to diffuse grain from
      * @param proportion of grain to diffuse
      */
-    private void diffuseGrain(Patch centrePatch, float proportion) {
+    protected void diffuseGrain(Patch centrePatch, float proportion) {
         int centreX = centrePatch.X;
         int centreY = centrePatch.Y;
         // figure out how much grain to spread
@@ -284,7 +284,7 @@ public class World {
         gini.add(currentGini);
     }
 
-    private List<Float> computeLorenz(List<Integer> wealth) {
+    protected List<Float> computeLorenz(List<Integer> wealth) {
         // sort wealth ascending
         Collections.sort(wealth);
 
@@ -304,7 +304,7 @@ public class World {
         return lor;
     }
 
-    private float updateGini(List<Float> lorenz) {
+    protected float updateGini(List<Float> lorenz) {
         float giniIndex = 0;
         for (int i = 0; i < lorenz.size(); i++) {
             giniIndex += (i+1)/(float)lorenz.size() - lorenz.get(i);
