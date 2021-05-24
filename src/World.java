@@ -242,10 +242,46 @@ public class World {
     }
 
     /**
-     * TODO
+     * Spread turtle over the world
      */
     private void setupTurtles() {
 
+    }
+
+    /**
+     * If there are multiple turtles on a patch,
+     * divide the grain evenly among the turtles
+     * @param p
+     * @param turtle
+     */ 
+    public void harvest(Patch p, Turtle turtle) {
+        
+        int turtleWealth = 0;
+
+        // have turtles harvest before any turtle sets the patch to 0
+        turtleWealth = turtle.getWealth() + (p.getGrainHere() / (getTurtlesOnPatch(p.X,p.Y)).size());
+        turtle.setWealth(turtleWealth);
+
+        // set Grain to 0 after harvest
+        p.setGrainHere(0);
+    }
+
+    /**
+     * 
+     * @param x
+     * @param y
+     * @return
+     */
+    private List<Turtle> getTurtlesOnPatch(int x, int y) {
+        List<Turtle> turtleList = new ArrayList<>();
+
+        for (Turtle turtle: turtles) {
+            if (turtle.getX() == x && turtle.getY() == y) {
+                turtleList.add(turtle);
+            } 
+        }
+
+        return turtleList;
     }
 
     private void go() {

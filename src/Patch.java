@@ -35,13 +35,6 @@ public class Patch {
         }
     }
 
-    /**
-     * TODO
-     */
-    public void harvest() {
-
-    }
-
     public int getGrainHere() {
         return grainHere;
     }
