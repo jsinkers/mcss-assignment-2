@@ -471,7 +471,7 @@ public class World {
             yMax = yMin + distance - 1;
         } else if (heading == Heading.SOUTH) {
             xMin = centreX;
-            xMax = centreY;
+            xMax = centreX;
             yMax = centreY - 1;
             yMin = yMax - distance + 1;
         } else if (heading == Heading.EAST) {
