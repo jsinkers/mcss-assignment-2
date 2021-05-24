@@ -10,7 +10,8 @@ import java.util.List;
  * Based on NetLogo wealth distribution model:
  * Wilensky, U. (1998). NetLogo Wealth Distribution model.
  * http://ccl.northwestern.edu/netlogo/models/WealthDistribution.
- * Center for Connected Learning and Computer-Based Modeling, Northwestern University, Evanston, IL.
+ * Center for Connected Learning and Computer-Based Modeling, Northwestern
+ * University, Evanston, IL.
  */
 public class World {
     // singleton instance
@@ -37,7 +38,7 @@ public class World {
     // number of patches in x direction
     private int xPatches;
     // number of patches in y direction
-    private int yPATCHES;
+    private int yPatches;
     // number of people (turtles) to seed in the world
     private int numPeople;
     // maximum value of metabolism for turtles
@@ -86,7 +87,7 @@ public class World {
         // parse properties from properties file
         MAX_TICKS = Integer.parseInt(worldProperties.getProperty("MaxTicks"));
         xPatches = Integer.parseInt(worldProperties.getProperty("XPatches"));
-        yPATCHES = Integer.parseInt(worldProperties.getProperty("YPatches"));
+        yPatches = Integer.parseInt(worldProperties.getProperty("YPatches"));
         numPeople = Integer.parseInt(worldProperties.getProperty("NumPeople"));
         maxVision = Integer.parseInt(worldProperties.getProperty("MaxVision"));
         metabolismMax = Integer.parseInt(worldProperties.getProperty( "MetabolismMax"));
@@ -157,7 +158,7 @@ public class World {
 
     private void printGrain() {
         for (int x = 0; x < xPatches; x++) {
-            for (int y = 0; y < yPATCHES; y++) {
+            for (int y = 0; y < yPatches; y++) {
                 System.out.print(getPatch(x,y).grainString());
             }
             System.out.println();
@@ -186,13 +187,13 @@ public class World {
         // create array of patches
         // some patches can hold the highest amount of grain possible (best
         // land)
-        patches = new Patch[xPatches][yPATCHES];
+        patches = new Patch[xPatches][yPatches];
 
         // initialise patches
         List<Patch> maxGrainPatches = new ArrayList<>();
         for (int x = 0; x < xPatches; x++) {
-            patches[x] = new Patch[yPATCHES];
-            for (int y = 0; y < yPATCHES; y++) {
+            patches[x] = new Patch[yPatches];
+            for (int y = 0; y < yPatches; y++) {
                 // determine how much grain to seed patch with
                 int patchGrain = determinePatchGrain();
                 // create the new patch
@@ -220,7 +221,7 @@ public class World {
         // diffuse 10 times across all patches
         for (int i = 0; i < 10; i++) {
             for (int x = 0; x < xPatches; x++) {
-                for (int y = 0; y < yPATCHES; y++) {
+                for (int y = 0; y < yPatches; y++) {
                     diffuseGrain(getPatch(x,y), 0.25f);
                 }
             }
@@ -230,7 +231,7 @@ public class World {
 
         // update max grain
         for (int x = 0; x < xPatches; x++) {
-            for (int y = 0; y < yPATCHES; y++) {
+            for (int y = 0; y < yPatches; y++) {
                 Patch p = getPatch(x,y);
                 p.setMaxGrainHere(p.getGrainHere());
             }
@@ -283,7 +284,7 @@ public class World {
         // grow grain if necessary
         if (tick % grainGrowthInterval == 0) {
             for (int x = 0; x < xPatches; x++) {
-                for (int y = 0; y < yPATCHES; y++) {
+                for (int y = 0; y < yPatches; y++) {
                     patches[x][y].growGrain();
                 }
             }
@@ -362,7 +363,7 @@ public class World {
      */
     public Patch getPatch(int x, int y) {
         int wrappedX = wrap(x, xPatches);
-        int wrappedY = wrap(y, yPATCHES);
+        int wrappedY = wrap(y, yPatches);
         return patches[wrappedX][wrappedY];
     }
 
@@ -500,7 +501,7 @@ public class World {
 
         // wrap coordinates in case we have reached bounds of map
         newCentreX = wrap(newCentreX, xPatches);
-        newCentreY = wrap(newCentreY, yPATCHES);
+        newCentreY = wrap(newCentreY, yPatches);
 
         // return corresponding point
         return new Point(newCentreX, newCentreY);
