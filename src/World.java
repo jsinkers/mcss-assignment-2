@@ -102,15 +102,7 @@ public class World {
             propertiesFile = args[0];
         }
 
-        System.out.println("Reading properties file " + propertiesFile);
-        try {
-            world.setupProperties(propertiesFile);
-        } catch (IOException e) {
-            System.err.println("Failed to read properties file " + propertiesFile);
-            System.exit(1);
-        }
-
-        world.setup();
+        world.setup(propertiesFile);
 
         // run model
         System.out.println("Running simulation");
@@ -146,6 +138,17 @@ public class World {
     }
 
     public void setup() {
+        setup(propertiesFile);
+    }
+
+    public void setup(String propertiesFile) {
+        System.out.println("Reading properties file " + propertiesFile);
+        try {
+            setupProperties(propertiesFile);
+        } catch (IOException e) {
+            System.err.println("Failed to read properties file " + propertiesFile);
+            System.exit(1);
+        }
         // set up patches
         setupPatches();
         // set up turtles
@@ -383,7 +386,6 @@ public class World {
      * TODO return all patches in the heading direction within the turtle's vision. If the vision reach the boundary of the world, then just return the available patches in the heading direction that is in the world
      */
     public List<Patch> getHeadingPatches(int centreX, int centreY, Heading heading, int distance) {
-
         //TODO: please put the first heading patch in the first position
         // of the arrayList, this element will be used in the Turtle class
         // to determine the next patch the turtle should move to.
@@ -419,13 +421,6 @@ public class World {
         // get list of neighbours
         for (int x = xMin; x <= xMax; x++) {
             for (int y = yMin; y <= yMax; y++) {
-                //TODO: we need to make sure x,y is not out of bound.
-                // If there is no more patch to get in a turtle's vision,
-                // we should only return the available patches in the trutle's vision.
-                // For example, if a turtle has vison 10 but there is only 1 heading patch.
-                // Then only one heading patch should be returned in the list.
-                // "Vision" is the same as "distance" in this case
-
                 neighbours.add(getPatch(x,y));
             }
         }
