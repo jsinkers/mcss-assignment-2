@@ -1,4 +1,5 @@
-# mcss-assignment-2
+# Wealth Distribution
+
 SWEN90004 - Modelling Complex Software Systems - Assignment 2
 
 ## Properties Files
@@ -36,3 +37,12 @@ java -classpath out World
 ```
 - can pass properties file as command line argument, otherwise defaults
   to `props/wealth-distrib-default.properties`
+- output CSV will be named as `{properties-file}-seed-{random-seed}.csv`
+
+### Command Line Options
+
+- arg 1: properties filename, default value = `props/wealth-distrib-default.properties`
+  - e.g. `java -classpath out World props/wealth-distrib-default.properties`
+- arg 2: random number seed, default value = 0.  If provided, must
+  also pass arg 1.
+  - e.g. `java -classpath out World props/wealth-distrib-default.properties 10`
