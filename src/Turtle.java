@@ -123,13 +123,13 @@ public class Turtle {
         //initialize the random direction the turtle head to
         heading= Heading.values()[random.nextInt(Heading.values().length)];
         //set a random life expectancy for the turtle
-        lifeExpectancy = World.getInstance().getLIFE_EXPECTANCY_MIN()
-                +random.nextInt(World.getInstance().getLIFE_EXPECTANCY_MAX()
-                -World.getInstance().getLIFE_EXPECTANCY_MIN()+1);
+        lifeExpectancy = World.getInstance().getLifeExpectancyMin()
+                +random.nextInt(World.getInstance().getLifeExpectancyMax()
+                -World.getInstance().getLifeExpectancyMin()+1);
 
-        metabolism=1+random.nextInt(World.getInstance().getMETABOLISM_MAX());
+        metabolism=1+random.nextInt(World.getInstance().getMetabolismMax());
         wealth=metabolism+random.nextInt(50);
-        vision=1+random.nextInt(World.getInstance().getMAX_VISION());
+        vision=1+random.nextInt(World.getInstance().getMaxVision());
 
     }
 
@@ -148,17 +148,17 @@ public class Turtle {
         //initialize the random direction the turtle head to
         heading= Heading.values()[random.nextInt(Heading.values().length)];
         //set a random life expectancy for the turtle
-        lifeExpectancy = World.getInstance().getLIFE_EXPECTANCY_MIN()
-                +random.nextInt(World.getInstance().getLIFE_EXPECTANCY_MAX()
-                -World.getInstance().getLIFE_EXPECTANCY_MIN()+1);
+        lifeExpectancy = World.getInstance().getLifeExpectancyMin()
+                +random.nextInt(World.getInstance().getLifeExpectancyMax()
+                -World.getInstance().getLifeExpectancyMin()+1);
 
-        metabolism=1+random.nextInt(World.getInstance().getMETABOLISM_MAX());
+        metabolism=1+random.nextInt(World.getInstance().getMetabolismMax());
         //a offspring has the same wealth as the parent
         //TODO: maybe we can remove this line as it is redundant.
         // The only reason it is here is that we need to use this
         // to represent wealth is inherited
         wealth=wealth;
-        vision=1+random.nextInt(World.getInstance().getMAX_VISION());
+        vision=1+random.nextInt(World.getInstance().getMaxVision());
 
     }
 
