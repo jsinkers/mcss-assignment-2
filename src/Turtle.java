@@ -8,6 +8,7 @@ import java.util.Random;
 public class Turtle {
     private int age;
     private int wealth;
+
     private int x;  //the current turtle position in x-axis
     private int y;   //the current turtle position in y-axis
 
@@ -17,6 +18,7 @@ public class Turtle {
     private final Random random;
     //direction of where the turtle is heading (degree)
     private Heading heading;
+
 
     /**
      * Constructor used to initialize a turtle
@@ -180,7 +182,19 @@ public class Turtle {
 
     }
 
+    public int getX() {
+        return x;
+    }
+
+    public int getY() {
+        return y;
+    }
+
     public int getWealth() {
         return wealth;
+    }
+
+    public void setWealth(int wealth) {
+        this.wealth = wealth;
     }
 }
