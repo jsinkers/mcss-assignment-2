@@ -241,8 +241,28 @@ public class World {
                 p.setMaxGrainHere(p.getGrainHere());
             }
         }
-        //System.out.println("Reset max grain:");
-        //printGrain();
+
+        writePatchCsv();
+    }
+
+    /**
+     * Write a csv of all patches in the world
+     */
+    private void writePatchCsv() {
+        String csv = String.format("patch-default-seed-%d.csv", randomSeed);
+        try (PrintWriter pw = new PrintWriter(new FileWriter(csv))) {
+            // print header
+            pw.println("grain-here,max-grain-here");
+            // print each line
+            for (int x = 0; x < xPatches; x++) {
+                for (int y = 0; y < yPatches; y++) {
+                    Patch patch = patches[x][y];
+                    pw.println(patch.getGrainHere() + "," + patch.getMaxGrainHere());
+                }
+            }
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
     }
 
     /**
@@ -348,7 +368,7 @@ public class World {
 
         // gini
         float currentGini = computeGini(lorenz);
-        System.out.println("Tick: " + tick + ", Gini index: " + currentGini);
+        //System.out.println("Tick: " + tick + ", Gini index: " + currentGini);
         gini.add(currentGini);
     }
 
