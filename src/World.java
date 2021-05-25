@@ -305,6 +305,7 @@ public class World {
      * Run one step of the simulation
      */
     private void go() throws Exception {
+        tick++;
         // make turtles turn towards grain
         for (Turtle t: turtles) {
             t.turnTowardsGrain();
@@ -347,7 +348,7 @@ public class World {
 
         // gini
         float currentGini = computeGini(lorenz);
-        //System.out.println("Tick: " + tick + ", Gini index: " + currentGini);
+        System.out.println("Tick: " + tick + ", Gini index: " + currentGini);
         gini.add(currentGini);
     }
 

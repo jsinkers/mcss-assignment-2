@@ -67,7 +67,7 @@ public class Turtle {
         for (Heading h: Heading.values()) {
             heading = h;
             int grain = grainAhead();
-            if (grainAhead() > bestAmount) {
+            if (grain > bestAmount) {
                 bestAmount = grain;
                 bestDirection = h;
             }
