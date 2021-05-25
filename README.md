@@ -46,3 +46,12 @@ java -classpath out World
 - arg 2: random number seed, default value = 0.  If provided, must
   also pass arg 1.
   - e.g. `java -classpath out World props/wealth-distrib-default.properties 10`
+
+## Running experiments
+
+Run the Windows batch script `wealth-distrib.bat` to run experiments.
+An individual CSV will be output for each run of each experiment.
+
+## Tests
+
+JUnit is required to run unit tests.
