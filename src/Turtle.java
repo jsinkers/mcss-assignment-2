@@ -178,7 +178,7 @@ public class Turtle {
      */
     private void resetLifeExpectancy() {
         int minLifeExp = world.getLifeExpectancyMin();
-        int maxLifeExp = world.getLifeExpectancyMin();
+        int maxLifeExp = world.getLifeExpectancyMax();
         lifeExpectancy = minLifeExp +
                 random.nextInt(maxLifeExp - minLifeExp + 1);
     }
