@@ -54,7 +54,6 @@ public class Turtle {
         setInitialTurtleVars();
     }
 
-
     /**
      * determine the direction which is most profitable for each turtle in
      * the surrounding patches within the turtles' vision
@@ -178,8 +177,10 @@ public class Turtle {
      * Determine new life expectancy for turtle
      */
     private void resetLifeExpectancy() {
-        lifeExpectancy = world.getLifeExpectancyMin() +
-            random.nextInt(world.getLifeExpectancyMax() - world.getLifeExpectancyMin() + 1);
+        int minLifeExp = world.getLifeExpectancyMin();
+        int maxLifeExp = world.getLifeExpectancyMin();
+        lifeExpectancy = minLifeExp +
+                random.nextInt(maxLifeExp - minLifeExp + 1);
     }
 
     public int getX() {

@@ -133,7 +133,7 @@ public class World {
         // run model
         System.out.println("Running simulation");
         for (int i = 0; i < maxTicks; i++) {
-            System.out.println("Tick " + i);
+            //System.out.println("Tick " + i);
             try {
                 world.go();
             } catch (Exception e) {
@@ -143,6 +143,7 @@ public class World {
             //world.printGrain();
         }
         // write results to csv
+        System.out.println("Writing csv");
         world.writeToCsv();
     }
 
@@ -218,7 +219,7 @@ public class World {
                 p.setGrainHere(p.getMaxGrainHere());
                 diffuseGrain(p, 0.25f);
             }
-            System.out.println("Diffusion 1." + (i+1));
+            //System.out.println("Diffusion 1." + (i+1));
             //printGrain();
         }
 
@@ -229,7 +230,7 @@ public class World {
                     diffuseGrain(getPatch(x,y), 0.25f);
                 }
             }
-            System.out.println("Diffusion 2." + (i+1));
+            //System.out.println("Diffusion 2." + (i+1));
             //printGrain();
         }
 
@@ -240,7 +241,7 @@ public class World {
                 p.setMaxGrainHere(p.getGrainHere());
             }
         }
-        System.out.println("Reset max grain:");
+        //System.out.println("Reset max grain:");
         //printGrain();
     }
 
@@ -346,7 +347,7 @@ public class World {
 
         // gini
         float currentGini = computeGini(lorenz);
-        System.out.println("Tick: " + tick + ", Gini index: " + currentGini);
+        //System.out.println("Tick: " + tick + ", Gini index: " + currentGini);
         gini.add(currentGini);
     }
 
