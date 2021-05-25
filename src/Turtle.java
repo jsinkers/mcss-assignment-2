@@ -99,7 +99,7 @@ public class Turtle {
         }
         //add up the total grain in the heading patches that can be seen by the turtle
         for (Patch headingPatch : headingPatches) {
-            total = total + headingPatch.getGrainHere();
+            total = total + (int)headingPatch.getGrainHere();
         }
         return total;
     }

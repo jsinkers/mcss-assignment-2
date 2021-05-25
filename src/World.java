@@ -238,6 +238,7 @@ public class World {
         for (int x = 0; x < xPatches; x++) {
             for (int y = 0; y < yPatches; y++) {
                 Patch p = getPatch(x,y);
+                p.setGrainHere(Math.floor(p.getGrainHere()));
                 p.setMaxGrainHere(p.getGrainHere());
             }
         }
@@ -277,8 +278,8 @@ public class World {
         int centreX = centrePatch.X;
         int centreY = centrePatch.Y;
         // figure out how much grain to spread
-        float grainToShare = centrePatch.getGrainHere()*proportion;
-        int grainPerNeighbour = (int)Math.floor(grainToShare/8.0f);
+        double grainToShare = centrePatch.getGrainHere()*proportion;
+        double grainPerNeighbour = grainToShare/8.0f;
         // remove grain from centre patch
         centrePatch.addGrain(-8*grainPerNeighbour);
         List<Patch> neighbours = getPatchNeighbours(centreX, centreY);

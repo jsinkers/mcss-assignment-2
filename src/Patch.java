@@ -6,11 +6,11 @@ import java.util.List;
  */
 public class Patch {
     // current amount of grain on the patch
-    private int grainHere;
+    private double grainHere;
     // amount of grain that grows at a given interval
     private final int numGrainGrown;
     // maximum grain the patch can hold
-    private int maxGrainHere;
+    private double maxGrainHere;
     // x, y coordinates of the patch
     public final int X;
     public final int Y;
@@ -51,12 +51,12 @@ public class Patch {
 
         // determine amount of grain to share, by dividing it evenly among
         // the turtles on the patch, rounding down
-        int grainToShare = getGrainHere() / turtleList.size();
+        double grainToShare = getGrainHere() / turtleList.size();
 
         // have turtles harvest before any turtle sets the patch to 0
         for (Turtle t: turtleList) {
             // update the wealth of each turtle
-            int turtleWealth = t.getWealth() + grainToShare;
+            int turtleWealth = t.getWealth() + (int)grainToShare;
             t.setWealth(turtleWealth);
         }
 
@@ -64,23 +64,23 @@ public class Patch {
         setGrainHere(0);
     }
 
-    public int getGrainHere() {
+    public double getGrainHere() {
         return grainHere;
     }
 
-    public void setGrainHere(int grainHere) {
+    public void setGrainHere(double grainHere) {
         this.grainHere = grainHere;
     }
 
-    public void addGrain(int v) {
+    public void addGrain(double v) {
         this.grainHere += v;
     }
 
-    public int getMaxGrainHere() {
+    public double getMaxGrainHere() {
         return maxGrainHere;
     }
 
-    public void setMaxGrainHere(int maxGrainHere) {
+    public void setMaxGrainHere(double maxGrainHere) {
         this.maxGrainHere = maxGrainHere;
     }
 
