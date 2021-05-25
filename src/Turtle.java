@@ -104,7 +104,7 @@ public class Turtle {
         return total;
     }
 
-    public void moveEatAgeDie() throws Exception {
+    public void moveEatAgeDie() {
         //update the turtle position to the new position after moving one distance
         Point nextPatch = world.getNextPatch(x,y,heading);
         x= (int) nextPatch.getX();
