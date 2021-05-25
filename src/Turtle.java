@@ -18,7 +18,10 @@ public class Turtle {
     private final Random random;
     //direction of where the turtle is heading (degree)
     private Heading heading;
+    private final World world;
 
+    // whether wealth should be inherited by turtles
+    private boolean inheritance = false;
 
     /**
      * Constructor used to initialize a turtle
@@ -29,8 +32,11 @@ public class Turtle {
         //initialize the turtle position with the coordinate information passed from the caller
         this.x=x;
         this.y=y;
+        this.world = World.getInstance();
         //initialize other turtle properties
-        random = World.getInstance().getRandom();
+        random = world.getRandom();
+        inheritance = world.getInheritance();
+
         setInitialTurtleVars();
     }
 
@@ -81,7 +87,7 @@ public class Turtle {
         //TODO: need to double check if this method is used correctly
         //get a list of patches which can be seen by the turtle in its heading direction
         //the number of the patches in the list depends on the vision of the turtle
-        List<Patch> headingPatches = World.getInstance()
+        List<Patch> headingPatches = world
                 .getHeadingPatches(x, y, heading, vision);
         //check if the returned heading patches list has the correct leangth
         if (vision != headingPatches.size()){
@@ -100,29 +106,16 @@ public class Turtle {
     }
 
     public void moveEatAgeDie() throws Exception {
-        /*//the turtle move forward by one distance
-        List<Patch> headingPatches = World.getInstance().getHeadingPatches(x,y,heading,vision);
-        //get the next patch the turtle will move to
-        //TODO: need to make sure that headPatches.get(0) get the first patch in the heading direction
-        if(headingPatches.size()>0) {
-            Patch nextPatch = headingPatches.get(0);
-            //update the turtle position to the next patch
-            x=nextPatch.X;
-            y=nextPatch.Y;
-        }else {
-            throw new Exception("there is no patch this turtle can move to");
-        }*/
-
         //update the heading direction of the turtle
         //TODO: check this works properly
-        Point nextPatch = World.getInstance().getNextPatch(x,y,heading);
+        Point nextPatch = world.getNextPatch(x,y,heading);
         //update the turtle position to the new position after moving one distance
         x= (int) nextPatch.getX();
         y= (int) nextPatch.getY();
 
         //consume some grain according to metabolism
         wealth=wealth-metabolism;
-//grow older
+        //grow older
         age++;
         //check for death conditions: if you have no grain or
         //you're older than the life expectancy or if some random factor
@@ -142,48 +135,56 @@ public class Turtle {
     public void setInitialTurtleVars(){
         //initialize the age to be 0
         age=0;
-        //TODO: double check if we need to update the position of a turtle when it is born,
-        // and how do we know the position of a turtle
-        //initialize the random direction the turtle head to
-        heading= Heading.values()[random.nextInt(Heading.values().length)];
-        //set a random life expectancy for the turtle
-        lifeExpectancy = World.getInstance().getLifeExpectancyMin()
-                +random.nextInt(World.getInstance().getLifeExpectancyMax()
-                -World.getInstance().getLifeExpectancyMin()+1);
+        // initialize the random direction the turtle head to
+        resetHeading();
+        // set a random life expectancy for the turtle
+        resetLifeExpectancy();
+        resetMetabolism();
+        resetWealth();
 
-        metabolism=1+random.nextInt(World.getInstance().getMetabolismMax());
-        wealth=metabolism+random.nextInt(50);
-        vision=1+random.nextInt(World.getInstance().getMaxVision());
+        resetVision();
 
     }
 
+    private void resetHeading() {
+        heading = Heading.values()[random.nextInt(Heading.values().length)];
+    }
 
     /**
      * This is the extension that implements the wealth inheritance mechanism.
-     * Used to reset a turtle's properties when it dies.
-     * Also used to initialize a turtle's properties when it is born.
-     * Only difference is that a offspring has the same wealth as the parent
+     * Used to reset a turtle's wealth when it dies.
+     * Also used to initialize a turtle's wealth when it is born.
+     * Only difference is that the offspring has the same wealth as the parent
      */
-    public void setInitialTurtleVarsExtension(){
-        //initialize the age to be 0
-        age=0;
-        //TODO: double check if we need to update the position of a turtle when it is born,
-        // and how do we know the position of a turtle
-        //initialize the random direction the turtle head to
-        heading= Heading.values()[random.nextInt(Heading.values().length)];
-        //set a random life expectancy for the turtle
-        lifeExpectancy = World.getInstance().getLifeExpectancyMin()
-                +random.nextInt(World.getInstance().getLifeExpectancyMax()
-                -World.getInstance().getLifeExpectancyMin()+1);
+    private void resetWealth() {
+        // choose a new wealth value. if inheritance is in play an offspring
+        // has the same wealth as the parent, and if this is the first tick,
+        // set the wealth randomly
+        if (!inheritance || world.getTick() == 0) {
+            wealth = metabolism + random.nextInt(world.getMaxGrain());
+        }
+    }
 
-        metabolism=1+random.nextInt(World.getInstance().getMetabolismMax());
-        //a offspring has the same wealth as the parent
-        //TODO: maybe we can remove this line as it is redundant.
-        // The only reason it is here is that we need to use this
-        // to represent wealth is inherited
-        wealth=wealth;
-        vision=1+random.nextInt(World.getInstance().getMaxVision());
+    /**
+     * Choose random vision for the turtle
+     */
+    private void resetVision() {
+        vision = 1 + random.nextInt(world.getMaxVision());
+    }
 
+    /**
+     * Choose random metabolism for the turtle
+     */
+    private void resetMetabolism() {
+        metabolism = 1 + random.nextInt(world.getMetabolismMax());
+    }
+
+    /**
+     * Determine new life expectancy for turtle
+     */
+    private void resetLifeExpectancy() {
+        lifeExpectancy = world.getLifeExpectancyMin() +
+            random.nextInt(world.getLifeExpectancyMax() - world.getLifeExpectancyMin() + 1);
     }
 
     public int getX() {

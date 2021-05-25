@@ -558,4 +558,16 @@ public class World {
     private void setPropertiesFile(String propertiesFile) {
         this.propertiesFile = propertiesFile;
     }
+
+    /**
+     * TODO
+     * @return
+     */
+    public boolean getInheritance() {
+        return false;
+    }
+
+    public int getMaxGrain() {
+        return MAX_GRAIN;
+    }
 }
