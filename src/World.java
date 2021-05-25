@@ -14,6 +14,9 @@ import java.util.List;
  * University, Evanston, IL.
  */
 public class World {
+    // whether to output a csv of the initial grain distribution across patches
+    private final boolean OUTPUT_GRAIN_DISTRIBUTION = false;
+
     // singleton instance
     private static World instance;
     // number of iterations to run simulation for
@@ -243,11 +246,14 @@ public class World {
             }
         }
 
-        writePatchCsv();
+        if (OUTPUT_GRAIN_DISTRIBUTION) {
+            writePatchCsv();
+        }
     }
 
     /**
-     * Write a csv of all patches in the world
+     * Write a csv of all patches in the world using fields "grain-here,
+     * max-grain-here".
      */
     private void writePatchCsv() {
         String csv = String.format("patch-default-seed-%d.csv", randomSeed);
