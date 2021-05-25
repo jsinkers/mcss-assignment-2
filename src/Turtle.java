@@ -52,6 +52,7 @@ public class Turtle {
         inheritance = world.getInheritance();
 
         setInitialTurtleVars();
+        age = random.nextInt(lifeExpectancy);
     }
 
     /**
@@ -104,6 +105,9 @@ public class Turtle {
         return total;
     }
 
+    /**
+     * TODO
+     */
     public void moveEatAgeDie() {
         //update the turtle position to the new position after moving one distance
         Point nextPatch = world.getNextPatch(x,y,heading);
@@ -118,7 +122,7 @@ public class Turtle {
         // you're older than the life expectancy or if some random factor
         // holds, then you "die" and are "reborn" (in fact, your variables
         // are just reset to new random values)
-        if(wealth<0 || age>=lifeExpectancy) {
+        if(wealth<0 || age >= lifeExpectancy) {
             setInitialTurtleVars();
         }
 
