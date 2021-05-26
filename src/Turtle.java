@@ -161,14 +161,10 @@ public class Turtle {
         if (!inheritance || world.getTick() == 0) {
             // random wealth
             wealth = metabolism + random.nextInt(WEALTH_BOUND);
-        } else if (inheritance) {
-            if (wealth < 0) {
-                // if wealth is negative, inherit nothing from parent
-                wealth = metabolism;
-            } else {
-                // if parent died with positive wealth, inherit it
-                wealth += metabolism;
-            }
+        } else if (inheritance && wealth < 0) {
+            // if wealth is negative, inherit nothing from parent, otherwise
+            // retain the parent's wealth
+            wealth = 0;
         }
     }
 
