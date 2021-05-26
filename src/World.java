@@ -14,14 +14,21 @@ import java.util.List;
  * University, Evanston, IL.
  */
 public class World {
-    // whether to output a csv of the initial grain distribution across patches
-    private final boolean OUTPUT_GRAIN_DISTRIBUTION = false;
-
     // singleton instance
     private static World instance;
+    // whether to output a csv of the initial grain distribution across patches
+    private final boolean OUTPUT_GRAIN_DISTRIBUTION = false;
+    // whether to print grain state at each tick
+    private final boolean PRINT_GRAIN = false;
+    // whether to output gini coefficient at each tick
+    private final boolean PRINT_GINI = false;
+    // proportion of grain to diffuse during setup of patches
+    private final float GRAIN_DIFFUSION_PROPORTION = 0.25f;
+
+    // whether to implement inheritance feature
+    private boolean inheritance = false;
     // number of iterations to run simulation for
-    // TODO: no longer static
-    private static int maxTicks;
+    private int maxTicks;
 
     // turtles (agents) in the world
     private final List<Turtle> turtles = new ArrayList<>();
@@ -61,16 +68,15 @@ public class World {
     private int grainGrowthInterval;
     // random seed value
     private int randomSeed = 0;
-
-    // name of file to record csv
-    private String csvFile;
-
     // maximum grain any patch can hold
     private final int MAX_GRAIN = 50;
 
     // random number generator
     private Random random;
 
+    /**
+     * Default constructor for World
+     */
     private World() {
     }
 
@@ -102,11 +108,22 @@ public class World {
         // initialise random number generator
         random = new Random(randomSeed);
 
-        // determine output csv filename
+    }
+
+    /**
+     * @return csv file name for simulation timeseries
+     */
+    public String getCsvFileName() {
+        String csvFilename;
         File propsFile = new File(propertiesFile);
         String basename = propsFile.getName().split("\\.")[0];
-        csvFile = basename + "-seed-" + randomSeed + ".csv";
-        System.out.println("Output csv: " + csvFile);
+        csvFilename = basename + "-seed-" + randomSeed;
+        if (inheritance) {
+            csvFilename += "-inheritance";
+        }
+        csvFilename += ".csv";
+        System.out.println("Output csv: " + csvFilename);
+        return csvFilename;
     }
 
     // get singleton instance of World
@@ -131,28 +148,43 @@ public class World {
             world.setRandomSeed(Integer.parseInt(args[1]));
         }
 
+        // determine if inheritance flag passed as command-line argument
+        if (args.length >= 3) {
+            world.setInheritance(Boolean.parseBoolean(args[2]));
+        }
+
         world.setup();
 
         // run model
         System.out.println("Running simulation");
+        int maxTicks = world.getMaxTicks();
         for (int i = 0; i < maxTicks; i++) {
-            //System.out.println("Tick " + i);
             try {
                 world.go();
             } catch (Exception e) {
                 e.printStackTrace();
                 System.exit(1);
             }
-            //world.printGrain();
+
+            if (world.PRINT_GRAIN) {
+                world.printGrain();
+            }
         }
         // write results to csv
         System.out.println("Writing csv");
         world.writeToCsv();
     }
 
+    private int getMaxTicks() {
+        return maxTicks;
+    }
 
+    /**
+     * Write "tick,gini" for each tick to a csv file
+     */
     private void writeToCsv() {
-        try (PrintWriter pw = new PrintWriter(new FileWriter(csvFile))) {
+        String csvFilename = getCsvFileName();
+        try (PrintWriter pw = new PrintWriter(new FileWriter(csvFilename))) {
             // print header
             pw.println("tick,gini");
             // print each line
@@ -164,6 +196,9 @@ public class World {
         }
     }
 
+    /**
+     * Print grainHere/maxGrainHere for the grid of patches
+     */
     private void printGrain() {
         for (int x = 0; x < xPatches; x++) {
             for (int y = 0; y < yPatches; y++) {
@@ -173,6 +208,9 @@ public class World {
         }
     }
 
+    /**
+     * Setup world for wealth distribution sim
+     */
     public void setup() {
         System.out.println("Reading properties file " + propertiesFile);
         try {
@@ -185,16 +223,15 @@ public class World {
         setupPatches();
         // set up turtles
         setupTurtles();
+        // initialise lorenz and gini
         updateLorenzAndGini();
     }
 
     /**
-     * Creates patches and initialises with grain
+     * Creates patches and initialises them with grain.
      */
     private void setupPatches() {
         // create array of patches
-        // some patches can hold the highest amount of grain possible (best
-        // land)
         patches = new Patch[xPatches][yPatches];
 
         // initialise patches
@@ -215,26 +252,21 @@ public class World {
 
         // spread grain around.  put some back into best land (diffuse)
         // diffuse 5 times
-        //printGrain();
         for (int i = 0; i < 5; i++) {
             for (Patch p: maxGrainPatches) {
                 // reset to initial grain value
                 p.setGrainHere(p.getMaxGrainHere());
-                diffuseGrain(p, 0.25f);
+                diffuseGrain(p, GRAIN_DIFFUSION_PROPORTION);
             }
-            //System.out.println("Diffusion 1." + (i+1));
-            //printGrain();
         }
 
         // diffuse 10 times across all patches
         for (int i = 0; i < 10; i++) {
             for (int x = 0; x < xPatches; x++) {
                 for (int y = 0; y < yPatches; y++) {
-                    diffuseGrain(getPatch(x,y), 0.25f);
+                    diffuseGrain(getPatch(x,y), GRAIN_DIFFUSION_PROPORTION);
                 }
             }
-            //System.out.println("Diffusion 2." + (i+1));
-            //printGrain();
         }
 
         // update max grain
@@ -246,6 +278,7 @@ public class World {
             }
         }
 
+        // output a csv of initial grain distribution of patches
         if (OUTPUT_GRAIN_DISTRIBUTION) {
             writePatchCsv();
         }
@@ -363,6 +396,9 @@ public class World {
         updateLorenzAndGini();
     }
 
+    /**
+     * Update the Lorenz curve and Gini coefficient
+     */
     private void updateLorenzAndGini() {
         // determine wealth of each turtle
         List<Integer> wealth = new ArrayList<>();
@@ -375,7 +411,9 @@ public class World {
 
         // gini
         float currentGini = computeGini(lorenz);
-        //System.out.println("Tick: " + tick + ", Gini index: " + currentGini);
+        if (PRINT_GINI) {
+            System.out.println("Tick: " + tick + ", Gini index: " + currentGini);
+        }
         gini.add(currentGini);
     }
 
@@ -588,12 +626,12 @@ public class World {
         this.propertiesFile = propertiesFile;
     }
 
-    /**
-     * TODO
-     * @return
-     */
     public boolean getInheritance() {
-        return false;
+        return inheritance;
+    }
+
+    private void setInheritance(boolean inheritance) {
+        this.inheritance = inheritance;
     }
 
     public int getMaxGrain() {
