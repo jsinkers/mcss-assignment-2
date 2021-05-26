@@ -22,10 +22,10 @@ public class Turtle {
     private int lifeExpectancy;
     // turtle's metabolism value: how much grain to consume at each tick
     private int metabolism;
-    // turtle's vision: how many patches ahead the turtle can look to determine
-    // where to move to next
+    // turtle's vision: the number of heading patches that can be seen by a turtle
     private int vision;
-    //direction of where the turtle is heading (degree)
+    // direction of where the turtle is heading
+    // (enum Heading {NORTH,EAST,SOUTH,WEST})
     private Heading heading;
 
     // random number generator
@@ -34,7 +34,7 @@ public class Turtle {
     // world running the sim
     private final World world;
 
-    // whether wealth should be inherited by turtles
+    // a flag used to determine whether wealth should be inherited by turtles
     private final boolean inheritance;
 
     /**
@@ -56,7 +56,7 @@ public class Turtle {
     }
 
     /**
-     * determine the direction which is most profitable for each turtle in
+     * determine the direction which is most profitable (can harvest the most grains) for each turtle in
      * the surrounding patches within the turtles' vision
      */
     public void turnTowardsGrain() throws Exception {
@@ -85,12 +85,12 @@ public class Turtle {
     private int grainAhead() throws Exception {
         //the total grain in the heading patches that can be seen by the turtle
         int total = 0;
-        //TODO: need to double check if this method is used correctly
         //get a list of patches which can be seen by the turtle in its heading direction
         //the number of the patches in the list depends on the vision of the turtle
         List<Patch> headingPatches = world
                 .getHeadingPatches(x, y, heading, vision);
-        //check if the returned heading patches list has the correct length
+        //check if the returned heading patches list has the correct size (size == Turtle's vision),
+        // raise an exception if this is not the case
         if (vision != headingPatches.size()){
             throw new Exception(String.format("Location (%d,%d), %s: the" +
                     " number " +
@@ -106,7 +106,10 @@ public class Turtle {
     }
 
     /**
-     * TODO
+     * Simulate a turtle's life cycle. After a turtle harvests the grain on its patch,
+     * this method is called to make the turtle move forward 1 position in its heading direction.
+     * Then consume some grain according to metabolism and grow older. If it reaches its life expectancy
+     * or has grain<0, it will "die" and "reborn".
      */
     public void moveEatAgeDie() {
         //update the turtle position to the new position after moving one distance
@@ -192,18 +195,30 @@ public class Turtle {
                 random.nextInt(maxLifeExp - minLifeExp + 1);
     }
 
+    /**
+     * @return the x coordination value of the turtle position
+     */
     public int getX() {
         return x;
     }
 
+    /**
+     * @return the y coordination value of the turtle position
+     */
     public int getY() {
         return y;
     }
 
+    /**
+     * @return the turtle's wealth
+     */
     public int getWealth() {
         return wealth;
     }
 
+    /**
+     * @param wealth the turtle's wealth you wish to set to
+     */
     public void setWealth(int wealth) {
         this.wealth = wealth;
     }
