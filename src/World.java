@@ -1,3 +1,7 @@
+/*
+ * SWEN90004 Assignment 2 - Wealth Distribution
+ * James Sinclair - 1114278, Yujun Yan - 952112, Junkai Xing - 1041973
+ */
 import java.awt.*;
 import java.io.*;
 import java.util.*;
@@ -5,16 +9,30 @@ import java.util.List;
 
 /**
  * Singleton class that represents the World, which runs the simulation
- * and holds all turtles and patches for the wealth distribution simulation
+ * and holds all turtles and patches for the wealth distribution simulation.
+ * Contains entrypoint for the simulation.
  * Based on NetLogo wealth distribution model:
  * Wilensky, U. (1998). NetLogo Wealth Distribution model.
  * http://ccl.northwestern.edu/netlogo/models/WealthDistribution.
- * Center for Connected Learning and Computer-Based Modeling, Northwestern University, Evanston, IL.
+ * Center for Connected Learning and Computer-Based Modeling, Northwestern
+ * University, Evanston, IL.
  */
 public class World {
     // singleton instance
     private static World instance;
-    private static String propertiesFile = "props/wealth-distrib-default.properties";
+    // whether to output a csv of the initial grain distribution across patches
+    private final boolean OUTPUT_GRAIN_DISTRIBUTION = false;
+    // whether to print grain state at each tick
+    private final boolean PRINT_GRAIN = false;
+    // whether to output gini coefficient at each tick
+    private final boolean PRINT_GINI = false;
+    // proportion of grain to diffuse during setup of patches
+    private final float GRAIN_DIFFUSION_PROPORTION = 0.25f;
+
+    // whether to implement inheritance feature
+    private boolean inheritance = false;
+    // number of iterations to run simulation for
+    private int maxTicks;
 
     // turtles (agents) in the world
     private final List<Turtle> turtles = new ArrayList<>();
@@ -26,32 +44,44 @@ public class World {
     // historical value of the gini coefficient
     private final List<Float> gini = new ArrayList<>();
 
+    // properties file used to load run parameters
+    private String propertiesFile = "props/wealth-distrib-default.properties";
+
+    // run parameters
     // current tick of the world
     private int tick;
-    // number of iterations to run simulation for
-    private static int MAX_TICKS;
-    private int X_PATCHES;
-    private int Y_PATCHES;
-    private int NUM_PEOPLE;
-    private int METABOLISM_MAX;
-    private int MAX_VISION;
-    private int LIFE_EXPECTANCY_MIN;
-    private int LIFE_EXPECTANCY_MAX;
-    private int PERCENT_BEST_LAND;
-    private int NUM_GRAIN_GROWN;
-    private int GRAIN_GROWTH_INTERVAL;
-    private int RANDOM_SEED;
-    private String csvFile;
-
+    // number of patches in x direction
+    private int xPatches;
+    // number of patches in y direction
+    private int yPatches;
+    // number of people (turtles) to seed in the world
+    private int numPeople;
+    // maximum value of metabolism for turtles
+    private int metabolismMax;
+    // maximum number of patches ahead a turtle can see
+    private int maxVision;
+    // minimum turtle life expectancy
+    private int lifeExpectancyMin;
+    // maximum turtle life expectancy
+    private int lifeExpectancyMax;
+    // percentage of land that has maximum grain capacity
+    private int percentBestLand;
+    // quantity of grain that grows each grain interval
+    private int numGrainGrown;
+    // interval of grain growth
+    private int grainGrowthInterval;
+    // random seed value
+    private int randomSeed = 0;
     // maximum grain any patch can hold
-    private int MAX_GRAIN;
+    private final int MAX_GRAIN = 50;
 
+    // random number generator
     private Random random;
 
-
-    public World() {
-        // read parameters from config file
-        MAX_GRAIN = 50;
+    /**
+     * Default constructor for World
+     */
+    private World() {
     }
 
     /**
@@ -61,30 +91,46 @@ public class World {
      */
     private void setupProperties(String propertiesFile) throws IOException {
         Properties worldProperties = new Properties();
+        // load properties file
         try (FileReader inStream = new FileReader(propertiesFile)) {
             worldProperties.load(inStream);
         }
 
-        MAX_TICKS = Integer.parseInt(worldProperties.getProperty("MaxTicks"));
-        X_PATCHES = Integer.parseInt(worldProperties.getProperty("XPatches"));
-        Y_PATCHES = Integer.parseInt(worldProperties.getProperty("YPatches"));
-        NUM_PEOPLE = Integer.parseInt(worldProperties.getProperty("NumPeople"));
-        MAX_VISION = Integer.parseInt(worldProperties.getProperty("MaxVision"));
-        METABOLISM_MAX = Integer.parseInt(worldProperties.getProperty( "MetabolismMax"));
-        LIFE_EXPECTANCY_MIN = Integer.parseInt(worldProperties.getProperty( "LifeExpectancyMin"));
-        LIFE_EXPECTANCY_MAX = Integer.parseInt(worldProperties.getProperty( "LifeExpectancyMax"));
-        PERCENT_BEST_LAND = Integer.parseInt(worldProperties.getProperty( "PercentBestLand"));
-        NUM_GRAIN_GROWN = Integer.parseInt(worldProperties.getProperty( "NumGrainGrown"));
-        GRAIN_GROWTH_INTERVAL = Integer.parseInt(worldProperties.getProperty( "GrainGrowthInterval"));
-        RANDOM_SEED = Integer.parseInt(worldProperties.getProperty( "RandomSeed"));
-        random = new Random(RANDOM_SEED);
+        // parse properties from properties file
+        maxTicks = Integer.parseInt(worldProperties.getProperty("MaxTicks"));
+        xPatches = Integer.parseInt(worldProperties.getProperty("XPatches"));
+        yPatches = Integer.parseInt(worldProperties.getProperty("YPatches"));
+        numPeople = Integer.parseInt(worldProperties.getProperty("NumPeople"));
+        maxVision = Integer.parseInt(worldProperties.getProperty("MaxVision"));
+        metabolismMax = Integer.parseInt(worldProperties.getProperty( "MetabolismMax"));
+        lifeExpectancyMin = Integer.parseInt(worldProperties.getProperty( "LifeExpectancyMin"));
+        lifeExpectancyMax = Integer.parseInt(worldProperties.getProperty( "LifeExpectancyMax"));
+        percentBestLand = Integer.parseInt(worldProperties.getProperty( "PercentBestLand"));
+        numGrainGrown = Integer.parseInt(worldProperties.getProperty( "NumGrainGrown"));
+        grainGrowthInterval = Integer.parseInt(worldProperties.getProperty( "GrainGrowthInterval"));
 
-        File propsFile = new File(propertiesFile);
-        String basename = propsFile.getName().split("\\.")[0];
-        csvFile = basename + ".csv";
-        System.out.println("Output csv: " + csvFile);
+        // initialise random number generator
+        random = new Random(randomSeed);
+
     }
 
+    /**
+     * @return csv file name for simulation timeseries
+     */
+    public String getCsvFileName() {
+        String csvFilename;
+        File propsFile = new File(propertiesFile);
+        String basename = propsFile.getName().split("\\.")[0];
+        csvFilename = basename + "-seed-" + randomSeed;
+        if (inheritance) {
+            csvFilename += "-inheritance";
+        }
+        csvFilename += ".csv";
+        System.out.println("Output csv: " + csvFilename);
+        return csvFilename;
+    }
+
+    // get singleton instance of World
     public static World getInstance() {
         if (instance == null) {
             instance = new World();
@@ -96,35 +142,53 @@ public class World {
         // create and setup world
         World world = World.getInstance();
 
-        // setup properties
+        // setup properties and random seed
         // check if properties file passed as command-line argument
-        if (args.length == 1) {
-            propertiesFile = args[0];
+        if (args.length >= 1) {
+            world.setPropertiesFile(args[0]);
+        }
+        // check if random seed passed as command-line argument
+        if (args.length >= 2) {
+            world.setRandomSeed(Integer.parseInt(args[1]));
         }
 
-        System.out.println("Reading properties file " + propertiesFile);
-        try {
-            world.setupProperties(propertiesFile);
-        } catch (IOException e) {
-            System.err.println("Failed to read properties file " + propertiesFile);
-            System.exit(1);
+        // determine if inheritance flag passed as command-line argument
+        if (args.length >= 3) {
+            world.setInheritance(Boolean.parseBoolean(args[2]));
         }
 
         world.setup();
 
         // run model
         System.out.println("Running simulation");
-        for (int i = 0; i < MAX_TICKS; i++) {
-            System.out.println("Tick " + i);
-            world.go();
-            //world.printGrain();
+        int maxTicks = world.getMaxTicks();
+        for (int i = 0; i < maxTicks; i++) {
+            try {
+                world.go();
+            } catch (Exception e) {
+                e.printStackTrace();
+                System.exit(1);
+            }
+
+            if (world.PRINT_GRAIN) {
+                world.printGrain();
+            }
         }
         // write results to csv
+        System.out.println("Writing csv");
         world.writeToCsv();
     }
 
+    private int getMaxTicks() {
+        return maxTicks;
+    }
+
+    /**
+     * Write "tick,gini" for each tick to a csv file
+     */
     private void writeToCsv() {
-        try (PrintWriter pw = new PrintWriter(new FileWriter(csvFile))) {
+        String csvFilename = getCsvFileName();
+        try (PrintWriter pw = new PrintWriter(new FileWriter(csvFilename))) {
             // print header
             pw.println("tick,gini");
             // print each line
@@ -136,41 +200,53 @@ public class World {
         }
     }
 
+    /**
+     * Print grainHere/maxGrainHere for the grid of patches
+     */
     private void printGrain() {
-        for (int x = 0; x < X_PATCHES; x++) {
-            for (int y = 0; y < Y_PATCHES; y++) {
+        for (int x = 0; x < xPatches; x++) {
+            for (int y = 0; y < yPatches; y++) {
                 System.out.print(getPatch(x,y).grainString());
             }
             System.out.println();
         }
     }
 
+    /**
+     * Setup world for wealth distribution sim
+     */
     public void setup() {
+        System.out.println("Reading properties file " + propertiesFile);
+        try {
+            setupProperties(propertiesFile);
+        } catch (IOException e) {
+            System.err.println("Failed to read properties file " + propertiesFile);
+            System.exit(1);
+        }
         // set up patches
         setupPatches();
         // set up turtles
         setupTurtles();
+        // initialise lorenz and gini
         updateLorenzAndGini();
     }
 
     /**
-     * Creates patches and initialises with grain
+     * Creates patches and initialises them with grain.
      */
     private void setupPatches() {
         // create array of patches
-        // some patches can hold the highest amount of grain possible (best
-        // land)
-        patches = new Patch[X_PATCHES][Y_PATCHES];
+        patches = new Patch[xPatches][yPatches];
 
         // initialise patches
         List<Patch> maxGrainPatches = new ArrayList<>();
-        for (int x = 0; x < X_PATCHES; x++) {
-            patches[x] = new Patch[Y_PATCHES];
-            for (int y = 0; y < Y_PATCHES; y++) {
+        for (int x = 0; x < xPatches; x++) {
+            patches[x] = new Patch[yPatches];
+            for (int y = 0; y < yPatches; y++) {
                 // determine how much grain to seed patch with
                 int patchGrain = determinePatchGrain();
                 // create the new patch
-                patches[x][y] = new Patch(x, y, patchGrain, NUM_GRAIN_GROWN);
+                patches[x][y] = new Patch(x, y, patchGrain, numGrainGrown);
                 // store patches with max grain for convenience later
                 if (patchGrain != 0) {
                     maxGrainPatches.add(patches[x][y]);
@@ -180,37 +256,57 @@ public class World {
 
         // spread grain around.  put some back into best land (diffuse)
         // diffuse 5 times
-        printGrain();
         for (int i = 0; i < 5; i++) {
             for (Patch p: maxGrainPatches) {
                 // reset to initial grain value
                 p.setGrainHere(p.getMaxGrainHere());
-                diffuseGrain(p, 0.25f);
+                diffuseGrain(p, GRAIN_DIFFUSION_PROPORTION);
             }
-            System.out.println("Diffusion 1." + (i+1));
-            printGrain();
         }
 
         // diffuse 10 times across all patches
         for (int i = 0; i < 10; i++) {
-            for (int x = 0; x < X_PATCHES; x++) {
-                for (int y = 0; y < Y_PATCHES; y++) {
-                    diffuseGrain(getPatch(x,y), 0.25f);
+            for (int x = 0; x < xPatches; x++) {
+                for (int y = 0; y < yPatches; y++) {
+                    diffuseGrain(getPatch(x,y), GRAIN_DIFFUSION_PROPORTION);
                 }
             }
-            System.out.println("Diffusion 2." + (i+1));
-            printGrain();
         }
 
         // update max grain
-        for (int x = 0; x < X_PATCHES; x++) {
-            for (int y = 0; y < Y_PATCHES; y++) {
+        for (int x = 0; x < xPatches; x++) {
+            for (int y = 0; y < yPatches; y++) {
                 Patch p = getPatch(x,y);
+                p.setGrainHere(Math.floor(p.getGrainHere()));
                 p.setMaxGrainHere(p.getGrainHere());
             }
         }
-        System.out.println("Reset max grain:");
-        printGrain();
+
+        // output a csv of initial grain distribution of patches
+        if (OUTPUT_GRAIN_DISTRIBUTION) {
+            writePatchCsv();
+        }
+    }
+
+    /**
+     * Write a csv of all patches in the world using fields "grain-here,
+     * max-grain-here".
+     */
+    private void writePatchCsv() {
+        String csv = String.format("patch-default-seed-%d.csv", randomSeed);
+        try (PrintWriter pw = new PrintWriter(new FileWriter(csv))) {
+            // print header
+            pw.println("grain-here,max-grain-here");
+            // print each line
+            for (int x = 0; x < xPatches; x++) {
+                for (int y = 0; y < yPatches; y++) {
+                    Patch patch = patches[x][y];
+                    pw.println(patch.getGrainHere() + "," + patch.getMaxGrainHere());
+                }
+            }
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
     }
 
     /**
@@ -225,8 +321,8 @@ public class World {
         int centreX = centrePatch.X;
         int centreY = centrePatch.Y;
         // figure out how much grain to spread
-        float grainToShare = centrePatch.getGrainHere()*proportion;
-        int grainPerNeighbour = (int)Math.floor(grainToShare/8.0f);
+        double grainToShare = centrePatch.getGrainHere()*proportion;
+        double grainPerNeighbour = grainToShare/8.0f;
         // remove grain from centre patch
         centrePatch.addGrain(-8*grainPerNeighbour);
         List<Patch> neighbours = getPatchNeighbours(centreX, centreY);
@@ -237,35 +333,76 @@ public class World {
     }
 
     /**
-     * TODO
+     * Set up the initial values for the turtle variables
      */
-    private void setInitialTurtleVars() {
-
+    private void setupTurtles() {
+       for (int i = 0; i < numPeople; i++) {
+           // determine location of new turtle
+           int x = random.nextInt(xPatches);
+           int y = random.nextInt(yPatches);
+           // create new turtle and add to the list of turtles
+           Turtle turtle = new Turtle(x, y);
+           turtles.add(turtle);
+       }
     }
 
     /**
-     * TODO
+     * Determine the turtles on each patch
+     * @param x x coordinate of patch
+     * @param y y coordinate of patch
+     * @return list of turtles on specified patch
      */
-    private void setupTurtles() {
+    public List<Turtle> getTurtlesOnPatch(int x, int y) {
+        List<Turtle> turtleList = new ArrayList<>();
 
+        for (Turtle turtle: turtles) {
+            // check if turtle is on the patch
+            if (turtle.getX() == x && turtle.getY() == y) {
+                turtleList.add(turtle);
+            } 
+        }
+
+        return turtleList;
     }
 
-    private void go() {
-        // run each turtle
+    /**
+     * Run one step of the simulation
+     */
+    private void go() throws Exception {
+        tick++;
+        // make turtles turn towards grain
+        for (Turtle t: turtles) {
+            t.turnTowardsGrain();
+        }
 
-        // run each patch
-        // grow grain if necessary
-        if (tick % GRAIN_GROWTH_INTERVAL == 0) {
-            for (int x = 0; x < X_PATCHES; x++) {
-                for (int y = 0; y < Y_PATCHES; y++) {
+        // harvest grain
+        for (int x = 0; x < xPatches; x++) {
+            for (int y = 0; y < yPatches; y++) {
+                patches[x][y].harvest();
+            }
+        }
+
+        // run each turtle
+        for (Turtle t: turtles) {
+            t.moveEatAgeDie();
+        }
+
+        // grow grain on patches if necessary
+        if (tick % grainGrowthInterval == 0) {
+            for (int x = 0; x < xPatches; x++) {
+                for (int y = 0; y < yPatches; y++) {
                     patches[x][y].growGrain();
                 }
             }
         }
 
+        // update statistics for each run
         updateLorenzAndGini();
     }
 
+    /**
+     * Update the Lorenz curve and Gini coefficient
+     */
     private void updateLorenzAndGini() {
         // determine wealth of each turtle
         List<Integer> wealth = new ArrayList<>();
@@ -277,7 +414,10 @@ public class World {
         lorenz = computeLorenz(wealth);
 
         // gini
-        float currentGini = updateGini(lorenz);
+        float currentGini = computeGini(lorenz);
+        if (PRINT_GINI) {
+            System.out.println("Tick: " + tick + ", Gini index: " + currentGini);
+        }
         gini.add(currentGini);
     }
 
@@ -301,10 +441,16 @@ public class World {
         return lor;
     }
 
-    private float updateGini(List<Float> lorenz) {
+    /**
+     * Compute the Gini index from a set of Lorenz points
+     * @param lorenz list of values comprising the lorenz curve
+     * @return Gini index corresponding to lorenz curve
+     */
+    private float computeGini(List<Float> lorenz) {
         float giniIndex = 0;
+        float numLorenz = (float)lorenz.size();
         for (int i = 0; i < lorenz.size(); i++) {
-            giniIndex += (i+1)/(float)lorenz.size() - lorenz.get(i);
+            giniIndex += (i+1)/numLorenz - lorenz.get(i);
         }
         return giniIndex;
     }
@@ -315,7 +461,7 @@ public class World {
     private int determinePatchGrain() {
         int patchGrain = 0;
         // check if this is best land
-        if (random.nextFloat() <= (PERCENT_BEST_LAND/100.0)) {
+        if (random.nextFloat() <= (percentBestLand /100.0)) {
             patchGrain = MAX_GRAIN;
         }
         return patchGrain;
@@ -335,8 +481,8 @@ public class World {
      * @return corresponding patch at (x,y)
      */
     public Patch getPatch(int x, int y) {
-        int wrappedX = wrap(x, X_PATCHES);
-        int wrappedY = wrap(y, Y_PATCHES);
+        int wrappedX = wrap(x, xPatches);
+        int wrappedY = wrap(y, yPatches);
         return patches[wrappedX][wrappedY];
     }
 
@@ -349,45 +495,40 @@ public class World {
     private int wrap(int v, int bound) {
         int max = bound-1;
         if (v > max) {
-            v = v % max;
+            v = v % max - 1;
         } else if (v < 0) {
             v = bound+v;
         }
         return v;
     }
 
-    public int getMAX_VISION() {
-        return MAX_VISION;
+    public int getMaxVision() {
+        return maxVision;
     }
 
-    public int getMETABOLISM_MAX() {
-        return METABOLISM_MAX;
+    public int getMetabolismMax() {
+        return metabolismMax;
     }
 
-    public int getLIFE_EXPECTANCY_MIN() {
-        return LIFE_EXPECTANCY_MIN;
+    public int getLifeExpectancyMin() {
+        return lifeExpectancyMin;
     }
 
-    public int getLIFE_EXPECTANCY_MAX() {
-        return LIFE_EXPECTANCY_MAX;
+    public int getLifeExpectancyMax() {
+        return lifeExpectancyMax;
     }
 
     /**
      * Get patches a particular distance from centre patch in a particular
-     * heading
+     * heading.  Note: result is unsorted by distance.
      * @param centreX x coordinate of centre patch
      * @param centreY y coordinate of centre patch
      * @param heading direction to list patches
      * @param distance number of patches to list in direction
      * @return list of patches in a direction up to distance from  centre point
-     * TODO return all patches in the heading direction within the turtle's vision. If the vision reach the boundary of the world, then just return the available patches in the heading direction that is in the world
      */
     public List<Patch> getHeadingPatches(int centreX, int centreY, Heading heading, int distance) {
-
-        //TODO: please put the first heading patch in the first position
-        // of the arrayList, this element will be used in the Turtle class
-        // to determine the next patch the turtle should move to.
-
+        // list to maintain the patches immediate neighbours
         List<Patch> neighbours = new ArrayList<>();
         int xMin = 0;
         int xMax = 0;
@@ -401,7 +542,7 @@ public class World {
             yMax = yMin + distance - 1;
         } else if (heading == Heading.SOUTH) {
             xMin = centreX;
-            xMax = centreY;
+            xMax = centreX;
             yMax = centreY - 1;
             yMin = yMax - distance + 1;
         } else if (heading == Heading.EAST) {
@@ -419,13 +560,6 @@ public class World {
         // get list of neighbours
         for (int x = xMin; x <= xMax; x++) {
             for (int y = yMin; y <= yMax; y++) {
-                //TODO: we need to make sure x,y is not out of bound.
-                // If there is no more patch to get in a turtle's vision,
-                // we should only return the available patches in the trutle's vision.
-                // For example, if a turtle has vison 10 but there is only 1 heading patch.
-                // Then only one heading patch should be returned in the list.
-                // "Vision" is the same as "distance" in this case
-
                 neighbours.add(getPatch(x,y));
             }
         }
@@ -441,6 +575,7 @@ public class World {
      */
     public List<Patch> getPatchNeighbours(int centreX, int centreY) {
         List<Patch> neighbours = new ArrayList<>();
+        // iterate over 9 cells surrounding and including centre patch
         for (int x = -1; x <= 1; x++) {
            for (int y = -1; y <= 1; y++) {
                // add all except centre patch
@@ -480,11 +615,30 @@ public class World {
         }
 
         // wrap coordinates in case we have reached bounds of map
-        newCentreX = wrap(newCentreX, X_PATCHES);
-        newCentreY = wrap(newCentreY, Y_PATCHES);
+        newCentreX = wrap(newCentreX, xPatches);
+        newCentreY = wrap(newCentreY, yPatches);
 
         // return corresponding point
         return new Point(newCentreX, newCentreY);
     }
-}
 
+    private void setRandomSeed(int randomSeed) {
+        this.randomSeed = randomSeed;
+    }
+
+    private void setPropertiesFile(String propertiesFile) {
+        this.propertiesFile = propertiesFile;
+    }
+
+    public boolean getInheritance() {
+        return inheritance;
+    }
+
+    private void setInheritance(boolean inheritance) {
+        this.inheritance = inheritance;
+    }
+
+    public int getMaxGrain() {
+        return MAX_GRAIN;
+    }
+}
