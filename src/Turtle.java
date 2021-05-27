@@ -2,6 +2,7 @@
  * SWEN90004 Assignment 2 - Wealth Distribution
  * James Sinclair - 1114278, Yujun Yan - 952112, Junkai Xing - 1041973
  */
+
 import java.awt.*;
 import java.util.List;
 import java.util.Random;
@@ -26,7 +27,8 @@ public class Turtle {
     private int lifeExpectancy;
     // turtle's metabolism value: how much grain to consume at each tick
     private int metabolism;
-    // turtle's vision: the number of heading patches that can be seen by a turtle
+    // turtle's vision: the number of heading patches that can be seen by a
+    // turtle
     private int vision;
     // direction of where the turtle is heading
     // (enum Heading {NORTH,EAST,SOUTH,WEST})
@@ -43,13 +45,15 @@ public class Turtle {
 
     /**
      * Constructor used to initialize a turtle
+     *
      * @param x initial x coordinate of the turtle position
      * @param y initial y coordinate of the turtle position
      */
     public Turtle(int x, int y) {
-        //initialize the turtle position with the coordinate information passed from the caller
-        this.x=x;
-        this.y=y;
+        //initialize the turtle position with the coordinate information
+        // passed from the caller
+        this.x = x;
+        this.y = y;
         this.world = World.getInstance();
         //initialize other turtle properties
         random = world.getRandom();
@@ -60,7 +64,8 @@ public class Turtle {
     }
 
     /**
-     * determine the direction which is most profitable (can harvest the most grains) for each turtle in
+     * determine the direction which is most profitable (can harvest the most
+     * grains) for each turtle in
      * the surrounding patches within the turtles' vision
      */
     public void turnTowardsGrain() throws Exception {
@@ -69,7 +74,7 @@ public class Turtle {
         // best direction to head
         Heading bestDirection = Heading.NORTH;
         // check each direction, finding the direction with the most grain ahead
-        for (Heading h: Heading.values()) {
+        for (Heading h : Heading.values()) {
             heading = h;
             int grain = grainAhead();
             if (grain > bestAmount) {
@@ -78,58 +83,69 @@ public class Turtle {
             }
         }
         // change heading to the best direction
-        heading=bestDirection;
+        heading = bestDirection;
     }
 
     /**
-     * calculate the total number of grain in the heading patches that can be seen by the turtle
+     * calculate the total number of grain in the heading patches that can be
+     * seen by the turtle
      *
-     * @return the total number of grain in the heading patches that can be seen by the turtle
+     * @return the total number of grain in the heading patches that can be
+     * seen by the turtle
      */
     private int grainAhead() throws Exception {
         //the total grain in the heading patches that can be seen by the turtle
         int total = 0;
-        //get a list of patches which can be seen by the turtle in its heading direction
-        //the number of the patches in the list depends on the vision of the turtle
+        //get a list of patches which can be seen by the turtle in its
+        // heading direction
+        //the number of the patches in the list depends on the vision of the
+        // turtle
         List<Patch> headingPatches = world
                 .getHeadingPatches(x, y, heading, vision);
-        //check if the returned heading patches list has the correct size (size == Turtle's vision),
+        //check if the returned heading patches list has the correct size
+        // (size == Turtle's vision),
         // raise an exception if this is not the case
-        if (vision != headingPatches.size()){
+        if (vision != headingPatches.size()) {
             throw new Exception(String.format("Location (%d,%d), %s: the" +
-                    " number " +
-                "of heading patches, %d, does not match the " +
-                "turtle's vision, %d", x, y, heading, headingPatches.size(),
+                            " number " +
+                            "of heading patches, %d, does not match the " +
+                            "turtle's vision, %d", x, y, heading,
+                    headingPatches.size(),
                     vision));
         }
-        //add up the total grain in the heading patches that can be seen by the turtle
+        //add up the total grain in the heading patches that can be seen by
+        // the turtle
         for (Patch headingPatch : headingPatches) {
-            total = total + (int)headingPatch.getGrainHere();
+            total = total + (int) headingPatch.getGrainHere();
         }
         return total;
     }
 
     /**
-     * Simulate a turtle's life cycle. After a turtle harvests the grain on its patch,
-     * this method is called to make the turtle move forward 1 position in its heading direction.
-     * Then consume some grain according to metabolism and grow older. If it reaches its life expectancy
+     * Simulate a turtle's life cycle. After a turtle harvests the grain on
+     * its patch,
+     * this method is called to make the turtle move forward 1 position in
+     * its heading direction.
+     * Then consume some grain according to metabolism and grow older. If it
+     * reaches its life expectancy
      * or has grain<0, it will "die" and "reborn".
      */
     public void moveEatAgeDie() {
-        //update the turtle position to the new position after moving one distance
-        Point nextPatch = world.getNextPatch(x,y,heading);
-        x= (int) nextPatch.getX();
-        y= (int) nextPatch.getY();
+        //update the turtle position to the new position after moving one
+        // distance
+        Point nextPatch = world.getNextPatch(x, y, heading);
+        x = (int) nextPatch.getX();
+        y = (int) nextPatch.getY();
 
         //consume some grain according to metabolism
-        wealth=wealth-metabolism;
+        wealth = wealth - metabolism;
         //grow older
         age++;
         // check for death conditions: if you have no grain or
         // you're older than the life expectancy or if some random factor
         // holds, then you "die" and are "reborn" (in fact, your variables
         // are just reset to new random values)
-        if(wealth<0 || age >= lifeExpectancy) {
+        if (wealth < 0 || age >= lifeExpectancy) {
             setInitialTurtleVars();
         }
 
@@ -139,9 +155,9 @@ public class Turtle {
      * Used to reset a turtle's properties when it dies.
      * Also used to initialize a turtle's properties when it is born
      */
-    public void setInitialTurtleVars(){
+    public void setInitialTurtleVars() {
         //initialize the age to be 0
-        age=0;
+        age = 0;
         // initialize the random direction the turtle head to
         resetHeading();
         // set life expectancy, metabolism, wealth, vision
