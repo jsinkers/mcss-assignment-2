@@ -15,6 +15,13 @@ public class Patch {
     public final int X;
     public final int Y;
 
+    /**
+     * initialize the patch
+     * @param x  x coordinates of the patch
+     * @param y  y coordinates of the patch
+     * @param maxGrainHere  maximum grain the patch can hold
+     * @param numGrainGrown  amount of grain that grows at a given interval
+     */
     public Patch(int x, int y, int maxGrainHere, int numGrainGrown) {
         this.maxGrainHere = maxGrainHere;
         this.grainHere = maxGrainHere;
@@ -38,7 +45,9 @@ public class Patch {
     }
 
     /**
-     * Divide the grain evenly amongst all turtles on the patch
+     * harvest grain on the patch. If there are more than one turtle on the patch,
+     * divide the grain evenly amongst all turtles on the patch. No grain will be left
+     * on the patch after harvest, unless there is no turtle on the patch.
      */
     public void harvest() {
         // get all of the turtles on the patch
@@ -64,22 +73,42 @@ public class Patch {
         setGrainHere(0);
     }
 
+    /**
+     *
+     * @return the amount of grain on the patch
+     */
     public double getGrainHere() {
         return grainHere;
     }
 
+    /**
+     *
+     * @param grainHere the amount of grain on the patch
+     */
     public void setGrainHere(double grainHere) {
         this.grainHere = grainHere;
     }
 
+    /**
+     * add v gain to the patch
+     * @param v  the amount of grain to be added to the patch
+     */
     public void addGrain(double v) {
         this.grainHere += v;
     }
 
+    /**
+     *
+     * @return maximum grain the patch can hold
+     */
     public double getMaxGrainHere() {
         return maxGrainHere;
     }
 
+    /**
+     *
+     * @param maxGrainHere  maximum grain the patch can hold
+     */
     public void setMaxGrainHere(double maxGrainHere) {
         this.maxGrainHere = maxGrainHere;
     }
