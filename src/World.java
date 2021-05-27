@@ -317,7 +317,7 @@ public class World {
      * @param centrePatch to diffuse grain from
      * @param proportion of grain to diffuse
      */
-    private void diffuseGrain(Patch centrePatch, float proportion) {
+    protected void diffuseGrain(Patch centrePatch, float proportion) {
         int centreX = centrePatch.X;
         int centreY = centrePatch.Y;
         // figure out how much grain to spread
@@ -359,7 +359,7 @@ public class World {
             // check if turtle is on the patch
             if (turtle.getX() == x && turtle.getY() == y) {
                 turtleList.add(turtle);
-            } 
+            }
         }
 
         return turtleList;
@@ -421,7 +421,7 @@ public class World {
         gini.add(currentGini);
     }
 
-    private List<Float> computeLorenz(List<Integer> wealth) {
+    protected List<Float> computeLorenz(List<Integer> wealth) {
         // sort wealth ascending
         Collections.sort(wealth);
 
@@ -446,7 +446,7 @@ public class World {
      * @param lorenz list of values comprising the lorenz curve
      * @return Gini index corresponding to lorenz curve
      */
-    private float computeGini(List<Float> lorenz) {
+    protected float computeGini(List<Float> lorenz) {
         float giniIndex = 0;
         float numLorenz = (float)lorenz.size();
         for (int i = 0; i < lorenz.size(); i++) {
