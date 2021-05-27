@@ -38,7 +38,10 @@ java -classpath out World
 ```
 - can pass properties file as command line argument, otherwise defaults
   to `props/wealth-distrib-default.properties`
-- output CSV will be named as `{properties-file}-seed-{random-seed}.csv`
+- output CSVs will be named:
+  - original model: `{properties-file}-seed-{random-seed}.csv`
+  - extension model: `{properties-file}-seed-{random-seed}-inheritance.csv`
+- output CSVs are output in the working directory
 
 ### Command Line Options
 
