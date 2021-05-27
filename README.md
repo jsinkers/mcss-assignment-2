@@ -1,6 +1,7 @@
 # Wealth Distribution
 
 SWEN90004 - Modelling Complex Software Systems - Assignment 2
+James Sinclair - 1114278, Yujun Yan - 952112, Junkai Xing - 1041973
 
 ## Properties Files
 

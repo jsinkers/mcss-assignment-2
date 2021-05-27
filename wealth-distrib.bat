@@ -1,5 +1,6 @@
-:: James Sinclair
-:: Batch script to run java wealth distribution models
+:: SWEN90004 Assignment 2 - Wealth Distribution
+:: James Sinclair - 1114278, Yujun Yan - 952112, Junkai Xing - 1041973
+:: Batch script to build and run java wealth distribution models
 
 :: build model
 javac -d out src/*.java --class-path=src

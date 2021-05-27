@@ -1,3 +1,7 @@
+/*
+ * SWEN90004 Assignment 2 - Wealth Distribution
+ * James Sinclair - 1114278, Yujun Yan - 952112, Junkai Xing - 1041973
+ */
 import java.awt.*;
 import java.util.List;
 import java.util.Random;
