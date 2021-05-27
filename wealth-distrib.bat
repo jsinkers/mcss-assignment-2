@@ -3,7 +3,7 @@
 :: Batch script to build and run java wealth distribution models
 
 :: build model
-javac -d out src/*.java --class-path=src
+javac -d out src/World.java src/Turtle.java src/Patch.java src/Heading.java --class-path=src
 
 :: list of runs to use
 set runs=default 2 3 4 5 6 7 8 9 10 11 12

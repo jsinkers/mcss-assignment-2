@@ -29,7 +29,7 @@
 </ul>
 <h2 id="build">Build</h2>
 <p>To build the simulation, from the project root:</p>
-<div class="sourceCode" id="cb1"><pre class="sourceCode bash"><code class="sourceCode bash"><a class="sourceLine" id="cb1-1" title="1"><span class="ex">javac</span> -d out src/*.java --class-path=src</a></code></pre></div>
+<div class="sourceCode" id="cb1"><pre class="sourceCode bash"><code class="sourceCode bash"><a class="sourceLine" id="cb1-1" title="1"><span class="ex">javac</span> -d out src/World.java src/Turtle.java src/Patch.java src/Heading.java --class-path=src</a></code></pre></div>
 <h2 id="run">Run</h2>
 <p>To run the simulation, from the project root:</p>
 <div class="sourceCode" id="cb2"><pre class="sourceCode bash"><code class="sourceCode bash"><a class="sourceLine" id="cb2-1" title="1"><span class="ex">java</span> -classpath out World</a></code></pre></div>
@@ -76,4 +76,7 @@
 <li><a href="props/wealth-distrib-12.properties"><code>wealth-distrib-12.properties</code></a>: life-expectancy-min = 50; life-expectancy-max = 100</li>
 </ol>
 <h2 id="tests">Tests</h2>
-<p>JUnit is required to run unit tests. Requires manual setup. Build is not currently supported.</p>
+<p>JUnit is required to run unit tests. Requires manual setup</p>
+<ul>
+<li>See <a href="src/WorldTest.java"><code>WorldTest</code></a></li>
+</ul>

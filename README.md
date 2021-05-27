@@ -27,7 +27,7 @@ Directory structure:
 
 To build the simulation,  from the project root:
 ```bash
-javac -d out src/*.java --class-path=src
+javac -d out src/World.java src/Turtle.java src/Patch.java src/Heading.java --class-path=src
 ```
 
 ## Run
@@ -82,5 +82,6 @@ The NetLogo default model settings are used unless otherwise specified.
 
 ## Tests
 
-JUnit is required to run unit tests. Requires manual setup.  Build is
-not currently supported.
+JUnit is required to run unit tests. Requires manual setup
+
+- See [`WorldTest`](src/WorldTest.java)
