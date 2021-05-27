@@ -3,6 +3,24 @@
 SWEN90004 - Modelling Complex Software Systems - Assignment 2
 James Sinclair - 1114278, Yujun Yan - 952112, Junkai Xing - 1041973
 
+## Data Analysis
+
+- Jupyter notebook with full details of data analysis
+
+## Organisation
+
+Directory structure:
+
+- `data-analysis`: Jupyter notebooks and output from data analysis
+- `java-data`:
+  - commit-{hash}: stores Java output from a given commit
+    -  `initial-patches`: stores initial grain state of patches
+- `netlogo-data`: BehaviorSpace output of NetLogo wealth distribution model
+    - `initial-world-check`: stores initial grain state of patches for NetLogo models
+- `out`
+- `props`: properties files as described below
+- `src`: source code for Java model
+
 ## Properties Files
 
 - Properties files: live in `props/`
@@ -42,17 +60,23 @@ java -classpath out World
 
 ### Command Line Options
 
-- arg 1: properties filename, default value = `props/wealth-distrib-default.properties`
+- arg 1: properties filename {string}
+  - default value = `props/wealth-distrib-default.properties`
   - e.g. `java -classpath out World props/wealth-distrib-default.properties`
-- arg 2: random number seed, default value = 0.  If provided, must
-  also pass arg 1.
+- arg 2: random number seed {int}
+  - default value = 0
+  - If provided, must also pass arg 1.
   - e.g. `java -classpath out World props/wealth-distrib-default.properties 10`
+- arg 3: whether to run models with inheritance extension {boolean}
+  - default value = false (no inheritance)
+  - can only be used with arg 1 and arg 2
 
 ## Running experiments
 
-Run the Windows batch script `wealth-distrib.bat` to run experiments.
+Run the Windows batch script `wealth-distrib.bat` to build and then run experiments.
 An individual CSV will be output for each run of each experiment.
 
 ## Tests
 
-JUnit is required to run unit tests.
+JUnit is required to run unit tests. Requires manual setup.  Build is
+not currently supported.
