@@ -1,0 +1,79 @@
+<h1 id="wealth-distribution">Wealth Distribution</h1>
+<p>SWEN90004 - Modelling Complex Software Systems - Assignment 2</p>
+<p>James Sinclair - 1114278, Yujun Yan - 952112, Junkai Xing - 1041973</p>
+<h2 id="data-analysis">Data Analysis</h2>
+<ul>
+<li><a href="data-analysis/Wealth-Distribution.html">Exported Jupyter notebook</a> has full details of data analysis
+<ul>
+<li><a href="data-analysis/Wealth-Distribution.ipynb">Source</a></li>
+</ul></li>
+</ul>
+<h2 id="organisation">Organisation</h2>
+<p>Directory structure:</p>
+<ul>
+<li><code>data-analysis</code>: Jupyter notebooks and output files from data analysis</li>
+<li><code>java-data</code>: stores results from running Java model
+<ul>
+<li><code>commit-{hash}</code>: stores Java output from a given commit
+<ul>
+<li><code>initial-patches</code>: stores initial grain state of patches</li>
+</ul></li>
+</ul></li>
+<li><code>netlogo-data</code>: BehaviorSpace output of NetLogo wealth distribution model
+<ul>
+<li><code>initial-world-check</code>: stores initial grain state of patches for NetLogo models</li>
+</ul></li>
+<li><code>out</code>: contains built class files</li>
+<li><code>props</code>: properties files as described <a href="#properties-files">below</a></li>
+<li><code>src</code>: source code for Java model</li>
+</ul>
+<h2 id="build">Build</h2>
+<p>To build the simulation, from the project root:</p>
+<div class="sourceCode" id="cb1"><pre class="sourceCode bash"><code class="sourceCode bash"><a class="sourceLine" id="cb1-1" title="1"><span class="ex">javac</span> -d out src/*.java --class-path=src</a></code></pre></div>
+<h2 id="run">Run</h2>
+<p>To run the simulation, from the project root:</p>
+<div class="sourceCode" id="cb2"><pre class="sourceCode bash"><code class="sourceCode bash"><a class="sourceLine" id="cb2-1" title="1"><span class="ex">java</span> -classpath out World</a></code></pre></div>
+<ul>
+<li>can pass properties file as command line argument, otherwise defaults to <code>props/wealth-distrib-default.properties</code></li>
+<li>output CSV will be named as <code>{properties-file}-seed-{random-seed}.csv</code></li>
+</ul>
+<h3 id="command-line-options">Command Line Options</h3>
+<div class="sourceCode" id="cb3"><pre class="sourceCode bash"><code class="sourceCode bash"><a class="sourceLine" id="cb3-1" title="1"><span class="ex">java</span> -classpath out World <span class="dt">{filename}</span> {random seed} {<span class="ex">inheritance</span> flag}</a></code></pre></div>
+<ul>
+<li>arg 1: properties filename {string}
+<ul>
+<li>default value = <code>props/wealth-distrib-default.properties</code></li>
+<li>e.g. <code>java -classpath out World props/wealth-distrib-default.properties</code></li>
+</ul></li>
+<li>arg 2: random number seed {int}
+<ul>
+<li>default value = 0</li>
+<li>If provided, must also pass arg 1.</li>
+<li>e.g. <code>java -classpath out World props/wealth-distrib-default.properties 10</code></li>
+</ul></li>
+<li>arg 3: whether to run models with inheritance extension {boolean}
+<ul>
+<li>default value = false (no inheritance)</li>
+<li>can only be used with arg 1 and arg 2</li>
+</ul></li>
+</ul>
+<h2 id="running-experiments">Running experiments</h2>
+<p>Run the Windows batch script <code>wealth-distrib.bat</code> to build and then run experiments. An individual CSV will be output for each run of each experiment.</p>
+<h2 id="properties-files">Properties Files</h2>
+<p>Properties descriptions <code>wealth-distrib-{i}.properties</code> for experiments. The NetLogo default model settings are used unless otherwise specified.</p>
+<ol type="1">
+<li><a href="props/wealth-distrib-default.properties"><code>wealth-distrib-default.properties</code></a>: Default</li>
+<li><a href="props/wealth-distrib-2.properties"><code>wealth-distrib-2.properties</code></a>: num-people = 1000</li>
+<li><a href="props/wealth-distrib-3.properties"><code>wealth-distrib-3.properties</code></a>: num-people = 50</li>
+<li><a href="props/wealth-distrib-4.properties"><code>wealth-distrib-4.properties</code></a>: max-vision = 15</li>
+<li><a href="props/wealth-distrib-5.properties"><code>wealth-distrib-5.properties</code></a>: max-vision = 1</li>
+<li><a href="props/wealth-distrib-6.properties"><code>wealth-distrib-6.properties</code></a>: percent-best-land = 25%</li>
+<li><a href="props/wealth-distrib-7.properties"><code>wealth-distrib-7.properties</code></a>: percent-best-land = 5%</li>
+<li><a href="props/wealth-distrib-8.properties"><code>wealth-distrib-8.properties</code></a>: grain-growth-interval = 10</li>
+<li><a href="props/wealth-distrib-9.properties"><code>wealth-distrib-9.properties</code></a>: num_grain_grown = 1</li>
+<li><a href="props/wealth-distrib-10.properties"><code>wealth-distrib-10.properties</code></a>: num_grain_grown = 10</li>
+<li><a href="props/wealth-distrib-11.properties"><code>wealth-distrib-11.properties</code></a>: life-expectancy-min = 50; life-expectancy-max = 50</li>
+<li><a href="props/wealth-distrib-12.properties"><code>wealth-distrib-12.properties</code></a>: life-expectancy-min = 50; life-expectancy-max = 100</li>
+</ol>
+<h2 id="tests">Tests</h2>
+<p>JUnit is required to run unit tests. Requires manual setup. Build is not currently supported.</p>
