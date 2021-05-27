@@ -2,6 +2,7 @@
  * SWEN90004 Assignment 2 - Wealth Distribution
  * James Sinclair - 1114278, Yujun Yan - 952112, Junkai Xing - 1041973
  */
+
 import java.awt.*;
 import java.io.*;
 import java.util.*;
@@ -86,6 +87,7 @@ public class World {
 
     /**
      * Read simulation properties from a properties file
+     *
      * @param propertiesFile to read properties from
      * @throws IOException when reading properties file
      */
@@ -102,12 +104,18 @@ public class World {
         yPatches = Integer.parseInt(worldProperties.getProperty("YPatches"));
         numPeople = Integer.parseInt(worldProperties.getProperty("NumPeople"));
         maxVision = Integer.parseInt(worldProperties.getProperty("MaxVision"));
-        metabolismMax = Integer.parseInt(worldProperties.getProperty( "MetabolismMax"));
-        lifeExpectancyMin = Integer.parseInt(worldProperties.getProperty( "LifeExpectancyMin"));
-        lifeExpectancyMax = Integer.parseInt(worldProperties.getProperty( "LifeExpectancyMax"));
-        percentBestLand = Integer.parseInt(worldProperties.getProperty( "PercentBestLand"));
-        numGrainGrown = Integer.parseInt(worldProperties.getProperty( "NumGrainGrown"));
-        grainGrowthInterval = Integer.parseInt(worldProperties.getProperty( "GrainGrowthInterval"));
+        metabolismMax = Integer.parseInt(worldProperties.getProperty(
+                "MetabolismMax"));
+        lifeExpectancyMin = Integer.parseInt(worldProperties.getProperty(
+                "LifeExpectancyMin"));
+        lifeExpectancyMax = Integer.parseInt(worldProperties.getProperty(
+                "LifeExpectancyMax"));
+        percentBestLand = Integer.parseInt(worldProperties.getProperty(
+                "PercentBestLand"));
+        numGrainGrown = Integer.parseInt(worldProperties.getProperty(
+                "NumGrainGrown"));
+        grainGrowthInterval = Integer.parseInt(worldProperties.getProperty(
+                "GrainGrowthInterval"));
 
         // initialise random number generator
         random = new Random(randomSeed);
@@ -206,7 +214,7 @@ public class World {
     private void printGrain() {
         for (int x = 0; x < xPatches; x++) {
             for (int y = 0; y < yPatches; y++) {
-                System.out.print(getPatch(x,y).grainString());
+                System.out.print(getPatch(x, y).grainString());
             }
             System.out.println();
         }
@@ -257,7 +265,7 @@ public class World {
         // spread grain around.  put some back into best land (diffuse)
         // diffuse 5 times
         for (int i = 0; i < 5; i++) {
-            for (Patch p: maxGrainPatches) {
+            for (Patch p : maxGrainPatches) {
                 // reset to initial grain value
                 p.setGrainHere(p.getMaxGrainHere());
                 diffuseGrain(p, GRAIN_DIFFUSION_PROPORTION);
@@ -268,7 +276,7 @@ public class World {
         for (int i = 0; i < 10; i++) {
             for (int x = 0; x < xPatches; x++) {
                 for (int y = 0; y < yPatches; y++) {
-                    diffuseGrain(getPatch(x,y), GRAIN_DIFFUSION_PROPORTION);
+                    diffuseGrain(getPatch(x, y), GRAIN_DIFFUSION_PROPORTION);
                 }
             }
         }
@@ -276,7 +284,7 @@ public class World {
         // update max grain
         for (int x = 0; x < xPatches; x++) {
             for (int y = 0; y < yPatches; y++) {
-                Patch p = getPatch(x,y);
+                Patch p = getPatch(x, y);
                 p.setGrainHere(Math.floor(p.getGrainHere()));
                 p.setMaxGrainHere(p.getGrainHere());
             }
@@ -314,20 +322,21 @@ public class World {
      * patches grain, and shares equally among neighbours.
      * Based on NetLogo diffuse, see:
      * http://ccl.northwestern.edu/netlogo/docs/dict/diffuse.html
+     *
      * @param centrePatch to diffuse grain from
-     * @param proportion of grain to diffuse
+     * @param proportion  of grain to diffuse
      */
     protected void diffuseGrain(Patch centrePatch, float proportion) {
         int centreX = centrePatch.X;
         int centreY = centrePatch.Y;
         // figure out how much grain to spread
-        double grainToShare = centrePatch.getGrainHere()*proportion;
-        double grainPerNeighbour = grainToShare/8.0f;
+        double grainToShare = centrePatch.getGrainHere() * proportion;
+        double grainPerNeighbour = grainToShare / 8.0f;
         // remove grain from centre patch
-        centrePatch.addGrain(-8*grainPerNeighbour);
+        centrePatch.addGrain(-8 * grainPerNeighbour);
         List<Patch> neighbours = getPatchNeighbours(centreX, centreY);
         // add grain to each neighbour
-        for (Patch n: neighbours) {
+        for (Patch n : neighbours) {
             n.addGrain(grainPerNeighbour);
         }
     }
@@ -336,18 +345,19 @@ public class World {
      * Set up the initial values for the turtle variables
      */
     private void setupTurtles() {
-       for (int i = 0; i < numPeople; i++) {
-           // determine location of new turtle
-           int x = random.nextInt(xPatches);
-           int y = random.nextInt(yPatches);
-           // create new turtle and add to the list of turtles
-           Turtle turtle = new Turtle(x, y);
-           turtles.add(turtle);
-       }
+        for (int i = 0; i < numPeople; i++) {
+            // determine location of new turtle
+            int x = random.nextInt(xPatches);
+            int y = random.nextInt(yPatches);
+            // create new turtle and add to the list of turtles
+            Turtle turtle = new Turtle(x, y);
+            turtles.add(turtle);
+        }
     }
 
     /**
      * Determine the turtles on each patch
+     *
      * @param x x coordinate of patch
      * @param y y coordinate of patch
      * @return list of turtles on specified patch
@@ -355,7 +365,7 @@ public class World {
     public List<Turtle> getTurtlesOnPatch(int x, int y) {
         List<Turtle> turtleList = new ArrayList<>();
 
-        for (Turtle turtle: turtles) {
+        for (Turtle turtle : turtles) {
             // check if turtle is on the patch
             if (turtle.getX() == x && turtle.getY() == y) {
                 turtleList.add(turtle);
@@ -371,7 +381,7 @@ public class World {
     private void go() throws Exception {
         tick++;
         // make turtles turn towards grain
-        for (Turtle t: turtles) {
+        for (Turtle t : turtles) {
             t.turnTowardsGrain();
         }
 
@@ -383,7 +393,7 @@ public class World {
         }
 
         // run each turtle
-        for (Turtle t: turtles) {
+        for (Turtle t : turtles) {
             t.moveEatAgeDie();
         }
 
@@ -406,7 +416,7 @@ public class World {
     private void updateLorenzAndGini() {
         // determine wealth of each turtle
         List<Integer> wealth = new ArrayList<>();
-        for (Turtle turtle: turtles) {
+        for (Turtle turtle : turtles) {
             wealth.add(turtle.getWealth());
         }
 
@@ -433,9 +443,9 @@ public class World {
 
         // compute Lorenz points
         int cumulativeWealth = 0;
-        for (int w: wealth) {
+        for (int w : wealth) {
             cumulativeWealth += w;
-            float lorenzPoint = cumulativeWealth/(float)totalWealth;
+            float lorenzPoint = cumulativeWealth / (float) totalWealth;
             lor.add(lorenzPoint);
         }
         return lor;
@@ -443,14 +453,15 @@ public class World {
 
     /**
      * Compute the Gini index from a set of Lorenz points
+     *
      * @param lorenz list of values comprising the lorenz curve
      * @return Gini index corresponding to lorenz curve
      */
     protected float computeGini(List<Float> lorenz) {
         float giniIndex = 0;
-        float numLorenz = (float)lorenz.size();
+        float numLorenz = (float) lorenz.size();
         for (int i = 0; i < lorenz.size(); i++) {
-            giniIndex += (i+1)/numLorenz - lorenz.get(i);
+            giniIndex += (i + 1) / numLorenz - lorenz.get(i);
         }
         return giniIndex;
     }
@@ -461,7 +472,7 @@ public class World {
     private int determinePatchGrain() {
         int patchGrain = 0;
         // check if this is best land
-        if (random.nextFloat() <= (percentBestLand /100.0)) {
+        if (random.nextFloat() <= (percentBestLand / 100.0)) {
             patchGrain = MAX_GRAIN;
         }
         return patchGrain;
@@ -476,6 +487,7 @@ public class World {
 
     /**
      * Get patch, wrapping coordinates both horizontally and vertically
+     *
      * @param x x coordinate of patch
      * @param y y coordinate of patch
      * @return corresponding patch at (x,y)
@@ -488,16 +500,17 @@ public class World {
 
     /**
      * wrap v between 0 and (bound-1)
-     * @param v value to wrap
+     *
+     * @param v     value to wrap
      * @param bound maximum bound
      * @return wrapped value
      */
     private int wrap(int v, int bound) {
-        int max = bound-1;
+        int max = bound - 1;
         if (v > max) {
             v = v % max - 1;
         } else if (v < 0) {
-            v = bound+v;
+            v = bound + v;
         }
         return v;
     }
@@ -521,13 +534,15 @@ public class World {
     /**
      * Get patches a particular distance from centre patch in a particular
      * heading.  Note: result is unsorted by distance.
-     * @param centreX x coordinate of centre patch
-     * @param centreY y coordinate of centre patch
-     * @param heading direction to list patches
+     *
+     * @param centreX  x coordinate of centre patch
+     * @param centreY  y coordinate of centre patch
+     * @param heading  direction to list patches
      * @param distance number of patches to list in direction
      * @return list of patches in a direction up to distance from  centre point
      */
-    public List<Patch> getHeadingPatches(int centreX, int centreY, Heading heading, int distance) {
+    public List<Patch> getHeadingPatches(int centreX, int centreY,
+                                         Heading heading, int distance) {
         // list to maintain the patches immediate neighbours
         List<Patch> neighbours = new ArrayList<>();
         int xMin = 0;
@@ -560,7 +575,7 @@ public class World {
         // get list of neighbours
         for (int x = xMin; x <= xMax; x++) {
             for (int y = yMin; y <= yMax; y++) {
-                neighbours.add(getPatch(x,y));
+                neighbours.add(getPatch(x, y));
             }
         }
 
@@ -569,6 +584,7 @@ public class World {
 
     /**
      * get immediate neighbours of patch[x][y]
+     *
      * @param centreX x coordinate of patch
      * @param centreY y coordinate of patch
      * @return ArrayList of neigbouring patches
@@ -577,12 +593,12 @@ public class World {
         List<Patch> neighbours = new ArrayList<>();
         // iterate over 9 cells surrounding and including centre patch
         for (int x = -1; x <= 1; x++) {
-           for (int y = -1; y <= 1; y++) {
-               // add all except centre patch
-               if (!(x == 0 && y == 0)) {
-                   neighbours.add(getPatch(centreX+x, centreY+y));
-               }
-           }
+            for (int y = -1; y <= 1; y++) {
+                // add all except centre patch
+                if (!(x == 0 && y == 0)) {
+                    neighbours.add(getPatch(centreX + x, centreY + y));
+                }
+            }
         }
         return neighbours;
     }
@@ -594,8 +610,9 @@ public class World {
     /**
      * Get the location of the next patch by moving from (centreX, centreY) in
      * the direction heading.
-     * @param centreX X coordinate of current patch
-     * @param centreY Y coordinate of current patch
+     *
+     * @param centreX   X coordinate of current patch
+     * @param centreY   Y coordinate of current patch
      * @param direction to head
      * @return point with (x,y) coordinates of new location
      */

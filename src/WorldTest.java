@@ -2,6 +2,7 @@
  * SWEN90004 Assignment 2 - Wealth Distribution
  * James Sinclair - 1114278, Yujun Yan - 952112, Junkai Xing - 1041973
  */
+
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
@@ -89,7 +90,7 @@ class WorldTest {
      */
     @Test
     void getPatchNeighbours() {
-        List<Patch> neighbours = world.getPatchNeighbours(0,0);
+        List<Patch> neighbours = world.getPatchNeighbours(0, 0);
         // the patch should have 8 neighbours
         assertEquals(neighbours.size(), 8);
     }
@@ -99,7 +100,7 @@ class WorldTest {
      */
     @Test
     void getNextPatch() {
-        Point p1 = world.getNextPatch(0,0, Heading.NORTH);
+        Point p1 = world.getNextPatch(0, 0, Heading.NORTH);
         assertEquals(0, p1.getX());
         assertEquals(1, p1.getY());
     }
@@ -109,7 +110,7 @@ class WorldTest {
      */
     @Test
     void getNextPatch2() {
-        Point p1 = world.getNextPatch(0,50, Heading.NORTH);
+        Point p1 = world.getNextPatch(0, 50, Heading.NORTH);
         assertEquals(0, p1.getX());
         assertEquals(0, p1.getY());
     }
@@ -119,7 +120,7 @@ class WorldTest {
      */
     @Test
     void getNextPatch3() {
-        Point p1 = world.getNextPatch(0,0, Heading.WEST);
+        Point p1 = world.getNextPatch(0, 0, Heading.WEST);
         assertEquals(50, p1.getX());
         assertEquals(0, p1.getY());
     }
@@ -129,7 +130,7 @@ class WorldTest {
      */
     @Test
     void getNextPatch4() {
-        Point p1 = world.getNextPatch(0,0, Heading.SOUTH);
+        Point p1 = world.getNextPatch(0, 0, Heading.SOUTH);
         assertEquals(0, p1.getX());
         assertEquals(50, p1.getY());
     }
@@ -139,7 +140,7 @@ class WorldTest {
      */
     @Test
     void getNextPatch5() {
-        Point p1 = world.getNextPatch(0,0, Heading.EAST);
+        Point p1 = world.getNextPatch(0, 0, Heading.EAST);
         assertEquals(1, p1.getX());
         assertEquals(0, p1.getY());
     }
@@ -150,7 +151,7 @@ class WorldTest {
     @Test
     void getPatch() {
         // normal patch
-        Patch p1 = world.getPatch(0,0);
+        Patch p1 = world.getPatch(0, 0);
         assertEquals(0, p1.X);
         assertEquals(0, p1.Y);
     }
@@ -161,7 +162,7 @@ class WorldTest {
     @Test
     void getPatch2() {
         // off left patch
-        Patch p1 = world.getPatch(-1,5);
+        Patch p1 = world.getPatch(-1, 5);
         assertEquals(50, p1.X);
         assertEquals(5, p1.Y);
     }
@@ -172,7 +173,7 @@ class WorldTest {
     @Test
     void getPatch3() {
         // off top patch
-        Patch p1 = world.getPatch(0,61);
+        Patch p1 = world.getPatch(0, 61);
         assertEquals(0, p1.X);
         assertEquals(10, p1.Y);
     }
@@ -183,13 +184,13 @@ class WorldTest {
     @Test
     void diffuseGrain() {
         // set up neighbours of (1,1) with no grain
-        List<Patch> patches = world.getPatchNeighbours(1,1);
-        for (Patch p: patches) {
+        List<Patch> patches = world.getPatchNeighbours(1, 1);
+        for (Patch p : patches) {
             p.setGrainHere(0);
         }
 
         // set (1,1) to have 50 grain
-        Patch centrePatch = world.getPatch(1,1);
+        Patch centrePatch = world.getPatch(1, 1);
         centrePatch.setGrainHere(50);
 
         // diffuse grain from centrePatch, 0.25f
@@ -201,7 +202,7 @@ class WorldTest {
 
         // check centre patch is left with correct amount of grain
         assertEquals(37.5f, centrePatch.getGrainHere());
-        for (Patch p: patches) {
+        for (Patch p : patches) {
             assertEquals(1.5625f, p.getGrainHere());
         }
     }

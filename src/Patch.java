@@ -2,6 +2,7 @@
  * SWEN90004 Assignment 2 - Wealth Distribution
  * James Sinclair - 1114278, Yujun Yan - 952112, Junkai Xing - 1041973
  */
+
 import java.util.List;
 
 /**
@@ -21,10 +22,11 @@ public class Patch {
 
     /**
      * initialize the patch
-     * @param x  x coordinates of the patch
-     * @param y  y coordinates of the patch
+     *
+     * @param x             x coordinates of the patch
+     * @param y             y coordinates of the patch
      * @param maxGrainHere  maximum grain the patch can hold
-     * @param numGrainGrown  amount of grain that grows at a given interval
+     * @param numGrainGrown amount of grain that grows at a given interval
      */
     public Patch(int x, int y, int maxGrainHere, int numGrainGrown) {
         this.maxGrainHere = maxGrainHere;
@@ -49,8 +51,10 @@ public class Patch {
     }
 
     /**
-     * harvest grain on the patch. If there are more than one turtle on the patch,
-     * divide the grain evenly amongst all turtles on the patch. No grain will be left
+     * harvest grain on the patch. If there are more than one turtle on the
+     * patch,
+     * divide the grain evenly amongst all turtles on the patch. No grain
+     * will be left
      * on the patch after harvest, unless there is no turtle on the patch.
      */
     public void harvest() {
@@ -67,9 +71,9 @@ public class Patch {
         double grainToShare = getGrainHere() / turtleList.size();
 
         // have turtles harvest before any turtle sets the patch to 0
-        for (Turtle t: turtleList) {
+        for (Turtle t : turtleList) {
             // update the wealth of each turtle
-            int turtleWealth = t.getWealth() + (int)grainToShare;
+            int turtleWealth = t.getWealth() + (int) grainToShare;
             t.setWealth(turtleWealth);
         }
 
@@ -78,7 +82,6 @@ public class Patch {
     }
 
     /**
-     *
      * @return the amount of grain on the patch
      */
     public double getGrainHere() {
@@ -86,7 +89,6 @@ public class Patch {
     }
 
     /**
-     *
      * @param grainHere the amount of grain on the patch
      */
     public void setGrainHere(double grainHere) {
@@ -95,14 +97,14 @@ public class Patch {
 
     /**
      * add v gain to the patch
-     * @param v  the amount of grain to be added to the patch
+     *
+     * @param v the amount of grain to be added to the patch
      */
     public void addGrain(double v) {
         this.grainHere += v;
     }
 
     /**
-     *
      * @return maximum grain the patch can hold
      */
     public double getMaxGrainHere() {
@@ -110,8 +112,7 @@ public class Patch {
     }
 
     /**
-     *
-     * @param maxGrainHere  maximum grain the patch can hold
+     * @param maxGrainHere maximum grain the patch can hold
      */
     public void setMaxGrainHere(double maxGrainHere) {
         this.maxGrainHere = maxGrainHere;
@@ -119,13 +120,14 @@ public class Patch {
 
     @Override
     public String toString() {
-        return "P{(" + X + "," + Y + "), grain=" + grainHere + "/" + maxGrainHere + '}';
+        return "P{(" + X + "," + Y + "), grain=" + grainHere + "/" +
+                maxGrainHere + '}';
     }
 
     /**
      * returns a short string of "grainHere/maxGrainHere"
      */
     public String grainString() {
-        return String.format("%1$"+6+"s", grainHere + "/" + maxGrainHere);
+        return String.format("%1$" + 6 + "s", grainHere + "/" + maxGrainHere);
     }
 }
