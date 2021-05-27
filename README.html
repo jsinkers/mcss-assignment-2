@@ -35,7 +35,12 @@
 <div class="sourceCode" id="cb2"><pre class="sourceCode bash"><code class="sourceCode bash"><a class="sourceLine" id="cb2-1" title="1"><span class="ex">java</span> -classpath out World</a></code></pre></div>
 <ul>
 <li>can pass properties file as command line argument, otherwise defaults to <code>props/wealth-distrib-default.properties</code></li>
-<li>output CSV will be named as <code>{properties-file}-seed-{random-seed}.csv</code></li>
+<li>output CSVs will be named:
+<ul>
+<li>original model: <code>{properties-file}-seed-{random-seed}.csv</code></li>
+<li>extension model: <code>{properties-file}-seed-{random-seed}-inheritance.csv</code></li>
+</ul></li>
+<li>output CSVs are output in the working directory</li>
 </ul>
 <h3 id="command-line-options">Command Line Options</h3>
 <div class="sourceCode" id="cb3"><pre class="sourceCode bash"><code class="sourceCode bash"><a class="sourceLine" id="cb3-1" title="1"><span class="ex">java</span> -classpath out World <span class="dt">{filename}</span> {random seed} {<span class="ex">inheritance</span> flag}</a></code></pre></div>
